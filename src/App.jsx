@@ -53,7 +53,8 @@ function App() {
   useEffect(() => {
     const autoSync = localStorage.getItem('autoSync') === 'true';
     if (autoSync) {
-      handleBulkSync();
+      // Use setTimeout to avoid synchronous state update in effect
+      setTimeout(() => handleBulkSync(), 0);
     }
   }, []);
 
@@ -195,14 +196,30 @@ function App() {
 
         {/* VIEW CONTAINER */}
         <div style={{ flex: 1, padding: '1.5rem', overflow: 'hidden' }}>
-          {currentView === 'home' && <HomeView />}
+          {currentView === 'home' && (
+             <HomeView 
+               students={mockStudents} 
+               studentStats={studentStats}
+               onNavigate={(view) => {
+                 if (view === 'settings') goSettings();
+                 if (view === 'student_list') setIsSidebarOpen(true);
+               }}
+             />
+          )}
           {currentView === 'schedule' && <ScheduleView />}
           {currentView === 'settings' && <SettingsView />}
           {currentView === 'student' && selectedStudent && (
              <StudentDetailView student={selectedStudent} initialStats={studentStats[selectedStudent.id]} />
           )}
           {currentView === 'student' && !selectedStudent && (
-             <HomeView />
+             <HomeView 
+               students={mockStudents} 
+               studentStats={studentStats}
+               onNavigate={(view) => {
+                 if (view === 'settings') goSettings();
+                 if (view === 'student_list') setIsSidebarOpen(true);
+               }}
+             />
           )}
         </div>
 

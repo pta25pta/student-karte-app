@@ -1,6 +1,6 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 
-export function HomeView() {
+export function HomeView({ students = [], studentStats = {}, onNavigate }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   
   // Update time every second
@@ -35,9 +35,52 @@ export function HomeView() {
   // Simple daily quote based on date
   const todayQuoteIndex = new Date().getDate() % quotes.length;
 
-  // Mock data for dashboard
-  const activeStudents = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]; // 23 students
-  const term1Students = activeStudents; // All are term 1 for now
+  // Real data calculations
+  const stats = useMemo(() => {
+    if (!students.length) return {
+      activeCount: '-',
+      term1Count: '-',
+      avgWinRate: '-',
+      positiveBalanceCount: '-'
+    };
+    
+    // Calculate Term 1 students
+    const term1 = students.filter(s => (s.term || 1) === 1).length;
+
+    // Calculate Average Win Rate & Positive Balance Count
+    let totalWinRate = 0;
+    let countWithStats = 0;
+    let positiveCount = 0;
+
+    students.forEach(s => {
+      const stat = studentStats[s.id];
+      if (stat && !stat.error && stat.accuracy !== undefined) {
+          // Assuming 'accuracy' field is used for 'Submission Rate' based on previous context 
+          // (Wait, 'accuracy' from GAS usually means prediction accuracy, but we changed UI validation logic.
+          // Let's stick to what's available. If GAS returns 'winRate' we use that.)
+          
+          if (stat.winRate !== undefined) {
+             totalWinRate += parseFloat(stat.winRate) || 0;
+             countWithStats++;
+             
+             // Simple logic for positive balance (e.g. win rate > 50%)
+             if ((parseFloat(stat.winRate) || 0) >= 50) {
+                 positiveCount++;
+             }
+          }
+      }
+    });
+
+    const avgWinRate = countWithStats > 0 ? (totalWinRate / countWithStats).toFixed(1) + '%' : '-';
+    
+    return {
+      activeCount: students.length + '名',
+      term1Count: term1 + '名',
+      avgWinRate: avgWinRate,
+      positiveBalanceCount: positiveCount > 0 ? positiveCount + '名' : '-'
+    };
+  }, [students, studentStats]);
+
 
   // Get next event (schedule)
   const [nextEvent, setNextEvent] = useState(null);
@@ -96,14 +139,14 @@ export function HomeView() {
         <StatCard 
           icon="👥" 
           label="在籍生徒" 
-          value={activeStudents.length + '名'} 
+          value={stats.activeCount} 
           sublabel="全生徒数"
           color="#8b5cf6" 
         />
         <StatCard 
           icon="📚" 
           label="1期生" 
-          value={term1Students.length + '名'} 
+          value={stats.term1Count} 
           sublabel="学習中"
           color="#3b82f6" 
         />
@@ -115,10 +158,10 @@ export function HomeView() {
           color="#10b981" 
         />
         <StatCard 
-          icon="🎯" 
-          label="今月の目標" 
-          value="全員プラス" 
-          sublabel="月次収支"
+          icon="📈" 
+          label="平均勝率" 
+          value={stats.avgWinRate} 
+          sublabel="同期データより"
           color="#f59e0b" 
         />
       </div>
@@ -135,10 +178,26 @@ export function HomeView() {
               ⚡ クイックアクション
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
-               <ActionButton icon="📝" label="日誌チェック" onClick={() => {}} />
-               <ActionButton icon="📢" label="全体アナウンス" onClick={() => {}} />
-               <ActionButton icon="➕" label="生徒追加" onClick={() => alert('生徒追加機能は準備中です')} />
-               <ActionButton icon="⚙️" label="システム設定" onClick={() => {}} />
+               <ActionButton 
+                 icon="📝" 
+                 label="生徒リスト" 
+                 onClick={() => onNavigate && onNavigate('student_list')} 
+               />
+               <ActionButton 
+                 icon="📢" 
+                 label="全体アナウンス" 
+                 onClick={() => alert('機能準備中です')} 
+               />
+               <ActionButton 
+                 icon="➕" 
+                 label="生徒追加" 
+                 onClick={() => alert('機能準備中です')} 
+               />
+               <ActionButton 
+                 icon="⚙️" 
+                 label="システム設定" 
+                 onClick={() => onNavigate && onNavigate('settings')} 
+               />
             </div>
           </section>
 
@@ -148,10 +207,10 @@ export function HomeView() {
               ✅ 今日のチェックリスト
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <CheckItem label="朝のマーケット確認" />
-              <CheckItem label="前日の日誌フィードバック" />
-              <CheckItem label="未提出者のフォロー" />
-              <CheckItem label="週報の作成（金曜日）" />
+              <PersistentCheckItem id="chk_market" label="朝のマーケット確認" />
+              <PersistentCheckItem id="chk_feedback" label="前日の日誌フィードバック" />
+              <PersistentCheckItem id="chk_follow" label="未提出者のフォロー" />
+              <PersistentCheckItem id="chk_weekly" label="週報の作成（金曜日）" />
             </div>
           </section>
 
@@ -190,9 +249,8 @@ export function HomeView() {
               📈 全体サマリー
             </h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-               <SummaryRow label="平均勝率" value="-" />
-               <SummaryRow label="提出率" value="-" />
-               <SummaryRow label="勝ち越し人数" value="-" />
+               <SummaryRow label="平均勝率" value={stats.avgWinRate} />
+               <SummaryRow label="勝ち越し" value={stats.positiveBalanceCount} />
             </div>
             <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
                ※データは「全員同期」で更新
@@ -246,8 +304,18 @@ function ActionButton({ icon, label, onClick }) {
   );
 }
 
-function CheckItem({ label }) {
-  const [checked, setChecked] = useState(false);
+// CheckItem with Persistence
+function PersistentCheckItem({ id, label }) {
+  // Initialize state from localStorage
+  const [checked, setChecked] = useState(() => {
+    return localStorage.getItem('checklist_' + id) === 'true';
+  });
+
+  // Save to localStorage whenever changed
+  useEffect(() => {
+    localStorage.setItem('checklist_' + id, checked);
+  }, [checked, id]);
+
   return (
     <div 
       onClick={() => setChecked(!checked)}

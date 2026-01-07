@@ -86,8 +86,7 @@ export const ExternalDataService = {
     }
 
     try {
-       const response = await fetch(SPREADSHEET_URL);
-       const text = await response.text();
+       await fetch(SPREADSHEET_URL);
        return "Fetched Data";
     } catch (e) {
        console.error(e);
