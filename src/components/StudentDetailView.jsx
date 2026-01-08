@@ -195,13 +195,15 @@ function StudentProfileTab({ student, predictionStats, loadingStats, selectedMon
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
       <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: 0 }}>
         {/* Left Column - Profile & Stats */}
-        <div style={{ width: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.25rem' }}>
-          <ProfileCard student={student} />
+        {/* Left Column - Profile & Stats (Fixed) */}
+        <div style={{ flex: '0 0 300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.25rem' }}>
+          <ProfileCard student={student} onUpdate={onUpdate} />
+          <PersonalInfoPanel student={student} />
           <PredictionStatsCard stats={predictionStats} loading={loadingStats} />
         </div>
 
-        {/* Middle Column - Monthly History */}
-        <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1.5rem', overflowY: 'auto' }}>
+        {/* Middle Column - Monthly History (Fixed/Narrower) */}
+        <div className="card" style={{ flex: '0 0 380px', display: 'flex', flexDirection: 'column', padding: '1.5rem', overflowY: 'auto' }}>
           <MonthlyHistoryCard
             stats={predictionStats}
             loading={loadingStats}
@@ -210,10 +212,10 @@ function StudentProfileTab({ student, predictionStats, loadingStats, selectedMon
           />
         </div>
 
-        {/* Right Column - Other Info */}
-        <div style={{ width: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <CredentialsCard student={student} />
-          <DiscordCard student={student} />
+        {/* Right Column - Other Info (Flexible/Expanded) */}
+        <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <GoalsPanel student={student} />
+          <CredentialsCard student={student} onUpdate={onUpdate} />
           <OutputUrlCard student={student} onUpdate={onUpdate} />
           <StatusSection student={student} onUpdate={onUpdate} predictionStats={predictionStats} />
         </div>
@@ -937,11 +939,7 @@ function ProfileCard({ student }) {
       <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.25rem', color: 'var(--text-main)' }}>{student.name}</h2>
       <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>{student.status}</div>
 
-      <div style={{ textAlign: 'left', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-        <InfoRow label="生年月日" value={student.dob} />
-        <InfoRow label="トレード歴" value={student.tradeHistory} />
-        <InfoRow label="スクール歴" value={student.trainingHistory} />
-      </div>
+
     </div>
   );
 }
@@ -955,36 +953,175 @@ function InfoRow({ label, value }) {
   );
 }
 
-function CredentialsCard({ student }) {
-  const [showPw, setShowPw] = useState(false);
+function PersonalInfoPanel({ student }) {
+  const formatAddress = (addr) => {
+    if (!addr) return '-';
+    // Match standard pattern like "〒123-4567 "
+    const regex = /(\d{3}-\d{4})(?:\s|　)+/;
+    const match = addr.match(regex);
+    if (match) {
+        return (
+            <span>
+                {addr.slice(0, match.index + match[1].length).replace('〒', '〒 ')}
+                <br />
+                {addr.slice(match.index + match[0].length)}
+            </span>
+        );
+    }
+    // Fallback if formatting differs significantly
+    return addr;
+  };
+
   return (
     <div className="card" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text-main)' }}>FXTF ログイン</h3>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)' }}>個人情報</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
-        <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>ID</span>
-          <div style={{ fontFamily: 'monospace', color: 'var(--text-main)' }}>{student.fxtfId}</div>
-        </div>
-        <div
-          onClick={() => setShowPw(!showPw)}
-          style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', border: '1px solid var(--border-color)' }}
-        >
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>PW ({showPw ? '隠す' : '表示'})</span>
-          <div style={{ fontFamily: 'monospace', color: 'var(--text-main)' }}>{showPw ? student.fxtfPw : '••••••'}</div>
-        </div>
+        <InfoRow label="生年月日" value={student.dob} />
+        <InfoRow label="年齢" value={calculateAge(student.dob)} />
+        <InfoRow label="Eメール" value={student.email} />
+        <InfoRow label="住所" value={formatAddress(student.address)} />
+        <div style={{ borderTop: '1px solid var(--border-color)', margin: '0.5rem 0' }}></div>
+        <InfoRow label="トレード歴" value={student.tradeHistory + '年'} />
+        <InfoRow label="スクール歴" value={student.trainingHistory + '年'} />
       </div>
     </div>
   );
 }
 
-function DiscordCard({ student }) {
+function calculateAge(dob) {
+  if (!dob) return '-';
+  const birthDate = new Date(dob);
+  const difference = Date.now() - birthDate.getTime();
+  const ageDate = new Date(difference); 
+  return Math.abs(ageDate.getUTCFullYear() - 1970) + '歳';
+}
+
+function GoalsPanel({ student }) {
   return (
     <div className="card" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text-main)' }}>Discord</h3>
-      <div style={{ fontSize: '0.85rem', color: '#5865F2', fontWeight: '500' }}>@{student.discordName}</div>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)' }}>目標・課題</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.85rem' }}>
+        <div>
+          <div style={{ fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.2rem' }}>🎯 スクールで学びたいこと</div>
+          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
+            {student.goals || '未記入'}
+          </div>
+        </div>
+        <div>
+          <div style={{ fontWeight: 'bold', color: '#EF4444', marginBottom: '0.2rem' }}>🔥 自身の課題</div>
+          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
+            {student.issues || '未記入'}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+function CredentialsCard({ student, onUpdate }) {
+  // Convert old single ID/PW to array if needed
+  const accounts = Array.isArray(student.fxtfAccounts) ? student.fxtfAccounts : (
+      student.fxtfId ? [{ id: Date.now(), loginId: student.fxtfId, password: student.fxtfPw }] : []
+  );
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [localAccounts, setLocalAccounts] = useState(accounts);
+
+  const handleAdd = () => {
+    setLocalAccounts([...localAccounts, { id: Date.now(), loginId: '', password: '' }]);
+  };
+
+  const handleChange = (id, field, value) => {
+    setLocalAccounts(localAccounts.map(acc => acc.id === id ? { ...acc, [field]: value } : acc));
+  };
+
+  const handleDelete = (id) => {
+    setLocalAccounts(localAccounts.filter(acc => acc.id !== id));
+  };
+
+  const handleSave = () => {
+    onUpdate('fxtfAccounts', localAccounts);
+    // Also update legacy fields for backward compatibility if needed, using the first account
+    if (localAccounts.length > 0) {
+      onUpdate('fxtfId', localAccounts[0].loginId);
+      onUpdate('fxtfPw', localAccounts[0].password);
+    }
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="card" style={{ padding: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>FXTF ログイン</h3>
+        {!isEditing ? (
+           <button onClick={() => setIsEditing(true)} style={{ fontSize: '0.8rem', cursor: 'pointer', border: 'none', background: 'transparent' }}>✏️</button>
+        ) : (
+           <div style={{ display: 'flex', gap: '0.25rem' }}>
+             <button onClick={handleSave} style={{ fontSize: '0.8rem', cursor: 'pointer', background: '#10B981', color:'white', border:'none', borderRadius:'4px', padding:'2px 6px' }}>✓</button>
+             <button onClick={() => setIsEditing(false)} style={{ fontSize: '0.8rem', cursor: 'pointer', background: '#F3F4F6', color:'black', border:'none', borderRadius:'4px', padding:'2px 6px' }}>✕</button>
+           </div>
+        )}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.85rem' }}>
+        {localAccounts.length === 0 && <div style={{ color: 'var(--text-muted)', textAlign: 'center' }}>アカウントなし</div>}
+        
+        {localAccounts.map((acc, index) => (
+          <div key={acc.id} style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+             {isEditing ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>アカウント {currentIndex(index)}</span>
+                      <button onClick={() => handleDelete(acc.id)} style={{ color: 'red', border: 'none', background: 'transparent', cursor: 'pointer' }}>🗑</button>
+                   </div>
+                   <input 
+                      placeholder="ログインID" 
+                      value={acc.loginId} 
+                      onChange={(e) => handleChange(acc.id, 'loginId', e.target.value)}
+                      style={{ padding: '0.3rem', border: '1px solid #D1D5DB', borderRadius: '4px' }}
+                   />
+                   <input 
+                      placeholder="パスワード" 
+                      value={acc.password} 
+                      onChange={(e) => handleChange(acc.id, 'password', e.target.value)}
+                      style={{ padding: '0.3rem', border: '1px solid #D1D5DB', borderRadius: '4px' }}
+                   />
+                </div>
+             ) : (
+                <AccountDisplay acc={acc} index={index + 1} />
+             )}
+          </div>
+        ))}
+
+        {isEditing && (
+          <button onClick={handleAdd} style={{ width: '100%', padding: '0.4rem', border: '1px dashed var(--border-color)', background: 'white', color: 'var(--text-muted)', cursor: 'pointer', borderRadius: '4px' }}>
+            + アカウント追加
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function AccountDisplay({ acc, index }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div>
+      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>アカウント {index}</div>
+      <div style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '0.2rem' }}>ID: {acc.loginId}</div>
+      <div 
+        onClick={() => setShow(!show)} 
+        style={{ fontFamily: 'monospace', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+      >
+        <span>PW: {show ? acc.password : '••••••'}</span>
+        <span style={{ fontSize: '0.7rem', color: 'var(--primary)' }}>{show ? '隠す' : '表示'}</span>
+      </div>
+    </div>
+  );
+}
+
+function currentIndex(i) { return i + 1; }
+
+
 
 function OutputUrlCard({ student, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -1104,6 +1241,9 @@ function OutputUrlCard({ student, onUpdate }) {
     </div>
   );
 }
+
+
+
 
 
 
