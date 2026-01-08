@@ -203,7 +203,7 @@ function StudentProfileTab({ student, predictionStats, loadingStats, selectedMon
         </div>
 
         {/* Middle Column - Monthly History (Fixed/Narrower) */}
-        <div className="card" style={{ flex: '0 0 380px', display: 'flex', flexDirection: 'column', padding: '1.5rem', overflowY: 'auto' }}>
+        <div className="card" style={{ flex: '0 0 500px', display: 'flex', flexDirection: 'column', padding: '1.5rem', overflowY: 'auto' }}>
           <MonthlyHistoryCard
             stats={predictionStats}
             loading={loadingStats}
@@ -930,25 +930,65 @@ function StatusRow({ label, value, active, onClick }) {
   );
 }
 
-function ProfileCard({ student }) {
+function ProfileCard({ student, onUpdate }) {
+  const [isEditingRank, setIsEditingRank] = useState(false);
+  const rank = student.rank || 'C';
+
+  const ranks = [
+    { id: 'S', color: '#F59E0B', label: 'S' },
+    { id: 'A', color: '#3B82F6', label: 'A' },
+    { id: 'B', color: '#10B981', label: 'B' },
+    { id: 'C', color: '#F97316', label: 'C' },
+  ];
+
+  const currentRank = ranks.find(r => r.id === rank) || ranks[3];
+
   return (
     <div className="card" style={{ textAlign: 'center', padding: '1.5rem 1rem' }}>
-      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 0.75rem', border: '3px solid white', boxShadow: '0 0 0 2px var(--primary)' }}>
-        <img src={student.photoUrl} alt={student.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div style={{ position: 'relative', width: '80px', height: '80px', margin: '0 auto 0.75rem' }}>
+        <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden', border: '3px solid white', boxShadow: '0 0 0 2px var(--primary)' }}>
+          <img src={student.photoUrl} alt={student.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <div 
+           onClick={() => setIsEditingRank(!isEditingRank)}
+           style={{
+             position: 'absolute', bottom: '-4px', right: '-4px',
+             width: '28px', height: '28px',
+             background: currentRank.color, color: 'white',
+             borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+             fontSize: '0.85rem', fontWeight: 'bold',
+             border: '2px solid white', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+           }}
+           title="ランクを変更"
+        >
+          {currentRank.label}
+        </div>
+        {isEditingRank && (
+          <div style={{
+            position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+            background: 'white', border: '1px solid var(--border-color)', borderRadius: '8px',
+            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', padding: '0.5rem', zIndex: 10,
+            display: 'flex', gap: '0.25rem', marginTop: '0.5rem'
+          }}>
+            {ranks.map(r => (
+              <button key={r.id} onClick={() => { if (onUpdate) onUpdate('rank', r.id); setIsEditingRank(false); }}
+                style={{ width: '28px', height: '28px', borderRadius: '50%', background: r.color, color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 'bold' }}
+              >{r.label}</button>
+            ))}
+          </div>
+        )}
       </div>
       <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.25rem', color: 'var(--text-main)' }}>{student.name}</h2>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>{student.status}</div>
-
-
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{student.status}</div>
     </div>
   );
 }
 
 function InfoRow({ label, value }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F3F4F6', paddingBottom: '0.4rem', marginBottom: '0.2rem' }}>
-      <span style={{ color: 'var(--text-muted)' }}>{label}</span>
-      <span style={{ fontWeight: 500, color: 'var(--text-main)' }}>{value}</span>
+    <div style={{ display: 'flex', alignItems: 'flex-start', borderBottom: '1px solid #F3F4F6', paddingBottom: '0.4rem', marginBottom: '0.2rem' }}>
+      <span style={{ color: 'var(--text-muted)', width: '80px', flexShrink: 0 }}>{label}</span>
+      <span style={{ fontWeight: 500, color: 'var(--text-main)', textAlign: 'left' }}>{value}</span>
     </div>
   );
 }
@@ -998,18 +1038,18 @@ function calculateAge(dob) {
 
 function GoalsPanel({ student }) {
   return (
-    <div className="card" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)' }}>目標・課題</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.85rem' }}>
+    <div className="card" style={{ padding: '1rem', maxHeight: '200px', overflowY: 'auto' }}>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)', position: 'sticky', top: 0, background: 'white' }}>目標・課題</h3>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
         <div>
-          <div style={{ fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.2rem' }}>🎯 スクールで学びたいこと</div>
-          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
+          <div style={{ fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.2rem', fontSize: '0.8rem' }}>🎯 スクールで学びたいこと</div>
+          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap', fontSize: '0.8rem', maxHeight: '60px', overflowY: 'auto' }}>
             {student.goals || '未記入'}
           </div>
         </div>
         <div>
-          <div style={{ fontWeight: 'bold', color: '#EF4444', marginBottom: '0.2rem' }}>🔥 自身の課題</div>
-          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>
+          <div style={{ fontWeight: 'bold', color: '#EF4444', marginBottom: '0.2rem', fontSize: '0.8rem' }}>🔥 自身の課題</div>
+          <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap', fontSize: '0.8rem', maxHeight: '60px', overflowY: 'auto' }}>
             {student.issues || '未記入'}
           </div>
         </div>
@@ -1020,14 +1060,14 @@ function GoalsPanel({ student }) {
 function CredentialsCard({ student, onUpdate }) {
   // Convert old single ID/PW to array if needed
   const accounts = Array.isArray(student.fxtfAccounts) ? student.fxtfAccounts : (
-      student.fxtfId ? [{ id: Date.now(), loginId: student.fxtfId, password: student.fxtfPw }] : []
+      student.fxtfId ? [{ id: Date.now(), name: 'メイン', loginId: student.fxtfId, password: student.fxtfPw }] : []
   );
 
   const [isEditing, setIsEditing] = useState(false);
   const [localAccounts, setLocalAccounts] = useState(accounts);
 
   const handleAdd = () => {
-    setLocalAccounts([...localAccounts, { id: Date.now(), loginId: '', password: '' }]);
+    setLocalAccounts([...localAccounts, { id: Date.now(), name: '', loginId: '', password: '' }]);
   };
 
   const handleChange = (id, field, value) => {
@@ -1070,7 +1110,12 @@ function CredentialsCard({ student, onUpdate }) {
              {isEditing ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '0.7rem', fontWeight: 'bold' }}>アカウント {currentIndex(index)}</span>
+                      <input 
+                         placeholder="アカウント名" 
+                         value={acc.name || ''} 
+                         onChange={(e) => handleChange(acc.id, 'name', e.target.value)}
+                         style={{ padding: '0.2rem', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', width: '100px' }}
+                      />
                       <button onClick={() => handleDelete(acc.id)} style={{ color: 'red', border: 'none', background: 'transparent', cursor: 'pointer' }}>🗑</button>
                    </div>
                    <input 
@@ -1106,14 +1151,14 @@ function AccountDisplay({ acc, index }) {
   const [show, setShow] = useState(false);
   return (
     <div>
-      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.2rem' }}>アカウント {index}</div>
-      <div style={{ fontFamily: 'monospace', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '0.2rem' }}>ID: {acc.loginId}</div>
+      <div style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 'bold', marginBottom: '0.3rem' }}>{acc.name || 'アカウント ' + index}</div>
+      <div style={{ fontFamily: 'monospace', color: 'var(--text-main)', marginBottom: '0.2rem', fontSize: '0.8rem' }}>ID: {acc.loginId}</div>
       <div 
         onClick={() => setShow(!show)} 
-        style={{ fontFamily: 'monospace', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+        style={{ fontFamily: 'monospace', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}
       >
         <span>PW: {show ? acc.password : '••••••'}</span>
-        <span style={{ fontSize: '0.7rem', color: 'var(--primary)' }}>{show ? '隠す' : '表示'}</span>
+        <span style={{ fontSize: '0.65rem', color: 'var(--primary)' }}>{show ? '隠す' : '表示'}</span>
       </div>
     </div>
   );
@@ -1241,6 +1286,8 @@ function OutputUrlCard({ student, onUpdate }) {
     </div>
   );
 }
+
+
 
 
 
