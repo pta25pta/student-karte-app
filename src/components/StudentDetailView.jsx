@@ -1,15 +1,16 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { ExternalDataService } from '../services/ExternalDataService';
 
-export function StudentDetailView({ student, initialStats }) {
+export function StudentDetailView({ student, initialStats, onNotify }) {
   const [localStudent, setLocalStudent] = useState(student);
   const [predictionStats, setPredictionStats] = useState(initialStats || null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'lessons'
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() + 1 };
   });
-  
+
   useEffect(() => {
     setLocalStudent(student);
     setPredictionStats(initialStats || null);
@@ -18,28 +19,7 @@ export function StudentDetailView({ student, initialStats }) {
   const handleUpdate = (field, value) => {
     const updated = { ...localStudent, [field]: value };
     setLocalStudent(updated);
-    // eslint-disable-next-line
-    student[field] = value; 
-  };
-
-
-
-  const handleAddMemo = (content, tag) => {
-    if (!content.trim()) return;
-    const newMemo = {
-        id: Date.now().toString(),
-        date: new Date().toLocaleString('ja-JP'),
-        content: content,
-        tag: tag || null
-    };
-    const newHistory = [...(localStudent.memoHistory || []), newMemo];
-    handleUpdate('memoHistory', newHistory);
-  };
-
-  const handleDeleteMemo = (memoId) => {
-    if (!window.confirm('このメモを削除してもよろしいですか？')) return;
-    const newHistory = (localStudent.memoHistory || []).filter(m => m.id !== memoId);
-    handleUpdate('memoHistory', newHistory);
+    student[field] = value;
   };
 
   const handleFetchPredictionStats = async () => {
@@ -48,9 +28,10 @@ export function StudentDetailView({ student, initialStats }) {
       const stats = await ExternalDataService.fetchPredictionStats(localStudent.id, selectedMonth.year, selectedMonth.month);
       setPredictionStats(stats);
       handleUpdate('dailyPrediction', stats.prediction === true);
+      if (onNotify) onNotify('データの同期が完了しました', 'success');
     } catch (err) {
       console.error(err);
-      alert('データの取得に失敗しました');
+      if (onNotify) onNotify('データの取得に失敗しました', 'error');
     } finally {
       setLoadingStats(false);
     }
@@ -61,72 +42,382 @@ export function StudentDetailView({ student, initialStats }) {
     if (predictionStats) {
       handleFetchPredictionStats();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonth]);
 
   return (
-    <div className="h-full w-full" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflow: 'hidden' }}>
-      
-      {/* TOP ROW */}
-      <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: 0 }}>
-         {/* Left Column - Profile & Stats */}
-         <div style={{ width: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.5rem' }}>
-            <ProfileCard student={localStudent} />
-            <PredictionStatsCard 
-              stats={predictionStats} 
-              loading={loadingStats}
-              onSync={handleFetchPredictionStats}
-            />
-         </div>
+    <div className="h-full w-full animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%', overflow: 'hidden' }}>
 
-         {/* Middle Column - Monthly History */}
-         <div className="glass-panel" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1rem', overflowY: 'auto' }}>
-            <MonthlyHistoryCard 
-              stats={predictionStats} 
-              loading={loadingStats} 
-              selectedMonth={selectedMonth}
-              onMonthChange={setSelectedMonth}
-            />
-         </div>
-
-         {/* Right Column - Other Info */}
-         <div style={{ width: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <CredentialsCard student={localStudent} />
-            <DiscordCard student={localStudent} />
-            <StatusSection student={localStudent} onUpdate={handleUpdate} predictionStats={predictionStats} />
-         </div>
-      </div>
-
-      {/* BOTTOM ROW: Memo */}
-      <div className="glass-panel" style={{ height: '200px', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
-        <h3 style={{ marginBottom: '0.5rem', color: 'var(--primary-l)', fontWeight:'bold', fontSize: '0.9rem' }}>講師メモ</h3>
-        <MemoSection 
-           history={localStudent.memoHistory || []} 
-           onAdd={handleAddMemo} 
-           onDelete={handleDeleteMemo}
+      {/* PERSISTENT HEADER */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+        <input
+          type="file"
+          accept="image/*"
+          id="photo-upload"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              handleUpdate('photoUrl', ev.target.result);
+            };
+            reader.readAsDataURL(file);
+          }}
         />
+        <label
+          htmlFor="photo-upload"
+          style={{
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            overflow: 'hidden',
+            border: '2px solid white',
+            boxShadow: '0 0 0 1px var(--primary)',
+            cursor: 'pointer',
+            flexShrink: 0,
+            display: 'block'
+          }}
+          title="クリックして写真を変更"
+        >
+          <img src={localStudent.photoUrl} alt={localStudent.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </label>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem' }}>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>
+              {localStudent.name}
+            </h2>
+            {localStudent.noteName && (
+              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+                {localStudent.noteName}
+              </span>
+            )}
+            <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)', background: '#F3F4F6', padding: '0.1rem 0.5rem', borderRadius: '4px' }}>
+              {localStudent.status}
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem', marginTop: '0.2rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <span>ID: {localStudent.fxtfId}</span>
+              <span>{localStudent.dob}</span>
+            </div>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <span>📈 トレード歴: {localStudent.tradeHistory}年</span>
+              <span>🎓 トレーニング歴: {localStudent.trainingHistory}年</span>
+            </div>
+          </div>
+        </div>
+
+        {activeTab === 'profile' && (
+          <button
+            onClick={handleFetchPredictionStats}
+            disabled={loadingStats}
+            className="btn-primary"
+            style={{ opacity: loadingStats ? 0.7 : 1, padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}
+          >
+            {loadingStats ? '同期中...' : '↻ データ同期'}
+          </button>
+        )}
       </div>
 
+      {/* TABS */}
+      <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)' }}>
+        <TabButton label="📋 カルテ情報" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
+        <TabButton label="📖 授業記録" active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')} />
+      </div>
+
+      {/* CONTENT AREA */}
+      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {activeTab === 'profile' ? (
+          <StudentProfileTab
+            student={localStudent}
+            predictionStats={predictionStats}
+            loadingStats={loadingStats}
+            selectedMonth={selectedMonth}
+            onMonthChange={setSelectedMonth}
+            onUpdate={handleUpdate}
+          />
+        ) : (
+          <StudentLessonTab
+            student={localStudent}
+            onUpdate={handleUpdate}
+          />
+        )}
+      </div>
     </div>
   );
 }
 
+function TabButton({ label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        padding: '0.5rem 1rem',
+        borderRadius: '6px',
+        border: 'none',
+        background: active ? 'var(--primary)' : 'transparent',
+        color: active ? 'white' : 'var(--text-muted)',
+        fontWeight: active ? 'bold' : 'normal',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        fontSize: '0.95rem'
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+// ----------------------------------------------------------------------
+// TAB 1: PROFILE
+// ----------------------------------------------------------------------
+function StudentProfileTab({ student, predictionStats, loadingStats, selectedMonth, onMonthChange, onUpdate }) {
+  const handleAddMemo = (content, tag) => {
+    if (!content.trim()) return;
+    const newMemo = {
+      id: Date.now().toString(),
+      date: new Date().toLocaleString('ja-JP'),
+      content: content,
+      tag: tag || null
+    };
+    const newHistory = [...(student.memoHistory || []), newMemo];
+    onUpdate('memoHistory', newHistory);
+  };
+
+  const handleDeleteMemo = (memoId) => {
+    if (!window.confirm('このメモを削除してもよろしいですか？')) return;
+    const newHistory = (student.memoHistory || []).filter(m => m.id !== memoId);
+    onUpdate('memoHistory', newHistory);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+      <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: 0 }}>
+        {/* Left Column - Profile & Stats */}
+        <div style={{ width: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.25rem' }}>
+          <ProfileCard student={student} />
+          <PredictionStatsCard stats={predictionStats} loading={loadingStats} />
+        </div>
+
+        {/* Middle Column - Monthly History */}
+        <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1.5rem', overflowY: 'auto' }}>
+          <MonthlyHistoryCard
+            stats={predictionStats}
+            loading={loadingStats}
+            selectedMonth={selectedMonth}
+            onMonthChange={onMonthChange}
+          />
+        </div>
+
+        {/* Right Column - Other Info */}
+        <div style={{ width: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <CredentialsCard student={student} />
+          <DiscordCard student={student} />
+          <OutputUrlCard student={student} onUpdate={onUpdate} />
+          <StatusSection student={student} onUpdate={onUpdate} predictionStats={predictionStats} />
+        </div>
+      </div>
+
+      {/* BOTTOM ROW: Memo */}
+      <div className="card" style={{ height: '220px', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
+        <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-muted)', fontWeight: '600', fontSize: '0.85rem' }}>講師メモ (全体)</h3>
+        <MemoSection
+          history={student.memoHistory || []}
+          onAdd={handleAddMemo}
+          onDelete={handleDeleteMemo}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// TAB 2: LESSONS (New Interface)
+// ----------------------------------------------------------------------
+function LessonMemoField({ label, value, onChange, placeholder }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+        {label}
+      </label>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width: '100%',
+          minHeight: '100px',
+          resize: 'vertical',
+          padding: '0.75rem',
+          fontSize: '0.95rem',
+          lineHeight: '1.5',
+          border: '1px solid var(--border-color)',
+          borderRadius: '6px',
+          background: 'white',
+          color: 'var(--text-main)',
+          fontFamily: 'inherit',
+          outline: 'none'
+        }}
+      />
+    </div>
+  );
+}
+
+function StudentLessonTab({ student, onUpdate }) {
+  const [events] = useState(() => {
+    const saved = localStorage.getItem('scheduleData');
+    if (saved) {
+      const allTerms = JSON.parse(saved);
+      const termData = allTerms.find(t => t.id === (student.term || 1));
+      if (termData) {
+        return termData.events || [];
+      }
+    }
+    return [];
+  });
+
+  const [selectedEventId, setSelectedEventId] = useState(() => {
+    if (events.length > 0) return events[0].id;
+    return null;
+  });
+
+  const handleMemoChange = (field, val) => {
+    if (!selectedEventId) return;
+    const currentMemos = student.lessonMemos || {};
+    const currentEventMemo = currentMemos[selectedEventId] || { growth: '', challenges: '', instructor: '' };
+    const updatedEventMemo = { ...currentEventMemo, [field]: val };
+    const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
+    onUpdate('lessonMemos', newMemos);
+  };
+
+  const selectedEvent = events.find(e => e.id === selectedEventId);
+  const currentMemoData = selectedEvent ? ((student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' }) : { growth: '', challenges: '', instructor: '' };
+  // For backwards compat: if old string memo exists, migrate to new format
+  const memoGrowth = typeof currentMemoData === 'string' ? currentMemoData : (currentMemoData.growth || '');
+  const memoChallenges = typeof currentMemoData === 'string' ? '' : (currentMemoData.challenges || '');
+  const memoInstructor = typeof currentMemoData === 'string' ? '' : (currentMemoData.instructor || '');
+
+  // Parse "第X回" logic
+  const getLessonNo = (ev) => {
+    const match = ev.description?.match(/(第\d+回)/);
+    return match ? match[1] : null;
+  };
+
+  return (
+    <div style={{ display: 'flex', height: '100%', gap: '1rem' }}>
+      {/* Left: List */}
+      <div className="card" style={{ width: '320px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold' }}>授業一覧</div>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem' }}>
+          {events.length === 0 ? (
+            <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>予定なし</div>
+          ) : (
+            events.sort((a, b) => new Date(a.date) - new Date(b.date)).map(ev => {
+              const lessonNo = getLessonNo(ev);
+              const isSelected = ev.id === selectedEventId;
+              const memoData = (student.lessonMemos || {})[ev.id];
+              const hasMemo = memoData && (typeof memoData === 'string' ? memoData : (memoData.growth || memoData.challenges || memoData.instructor));
+
+              return (
+                <div
+                  key={ev.id}
+                  onClick={() => setSelectedEventId(ev.id)}
+                  style={{
+                    padding: '0.75rem',
+                    marginBottom: '0.5rem',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    background: isSelected ? '#EFF6FF' : 'white',
+                    border: isSelected ? '1px solid var(--primary)' : '1px solid transparent',
+                    transition: 'all 0.2s',
+                    position: 'relative'
+                  }}
+                >
+                  <div style={{ fontSize: '0.75rem', color: isSelected ? 'var(--primary)' : 'var(--text-muted)', marginBottom: '0.2rem' }}>
+                    {ev.date}
+                  </div>
+                  <div style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    {lessonNo && <span style={{ background: isSelected ? 'var(--primary)' : '#4B5563', color: 'white', fontSize: '0.7rem', padding: '1px 5px', borderRadius: '4px' }}>{lessonNo}</span>}
+                    {ev.title}
+                  </div>
+                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}>📝</div>}
+                </div>
+              );
+            })
+          )}
+        </div>
+      </div>
+
+      {/* Right: Editor */}
+      <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        {selectedEvent ? (
+          <>
+            <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', background: '#F9FAFB' }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                {getLessonNo(selectedEvent) && (
+                  <span style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--primary)', background: 'white', padding: '0.2rem 0.6rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                    {getLessonNo(selectedEvent)}
+                  </span>
+                )}
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>{selectedEvent.title}</h2>
+              </div>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                📅 {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
+              </div>
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1rem', gap: '1rem', overflowY: 'auto' }}>
+              <LessonMemoField
+                label="生徒本人の成長"
+                value={memoGrowth}
+                onChange={(val) => handleMemoChange('growth', val)}
+                placeholder="生徒の成長・良かった点を記入..."
+              />
+              <LessonMemoField
+                label="課題"
+                value={memoChallenges}
+                onChange={(val) => handleMemoChange('challenges', val)}
+                placeholder="今後の課題・改善点を記入..."
+              />
+              <LessonMemoField
+                label="講師メモ"
+                value={memoInstructor}
+                onChange={(val) => handleMemoChange('instructor', val)}
+                placeholder="講師としてのメモ・覚え書きを記入..."
+              />
+            </div>
+          </>
+        ) : (
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+            左のリストから授業を選択してください
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------------
+// HELPER COMPONENTS (Unchanged mostly)
+// ----------------------------------------------------------------------
 // Helper function to get prediction display info
 function getPredictionDisplay(prediction) {
   if (prediction === true) {
-    return { text: '陽線', icon: '🔴', color: '#4ade80' };
+    return { text: '陽線', icon: '🔴', color: '#10B981' };
   } else if (prediction === false) {
-    return { text: '陰線', icon: '🔵', color: '#60a5fa' };
+    return { text: '陰線', icon: '🔵', color: '#3B82F6' };
   } else if (prediction === 'skip') {
-    return { text: '見送', icon: '⏸️', color: '#fbbf24' };
+    return { text: '見送', icon: '⏸️', color: '#F59E0B' };
   } else {
-    return { text: '未提出', icon: '⚪', color: '#9ca3af' };
+    return { text: '未提出', icon: '⚪', color: '#9CA3AF' };
   }
 }
 
 function getResultStyle(result) {
-  if (result === '○') return { color: '#4ade80', fontWeight: 'bold' };
-  if (result === '×') return { color: '#f87171', fontWeight: 'bold' };
-  return { color: '#9ca3af' };
+  if (result === '○') return { color: '#10B981', fontWeight: 'bold' };
+  if (result === '×') return { color: '#EF4444', fontWeight: 'bold' };
+  return { color: '#9CA3AF' };
 }
 
 // Generate days for a specific month
@@ -135,23 +426,16 @@ function generateMonthDays(year, month) {
   const today = now.getDate();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-  
-  // Get number of days in the specified month
   const daysInMonth = new Date(year, month, 0).getDate();
-  
-  // Special case: January 2026 starts from 12th (classes start on 10th)
   const startDay = (year === 2026 && month === 1) ? 12 : 1;
-  
+
   const days = [];
   for (let day = startDay; day <= daysInMonth; day++) {
     const date = new Date(year, month - 1, day);
-    // Skip weekends (Saturday = 6, Sunday = 0)
     const dayOfWeek = date.getDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-    
-    // For current month, only show days up to today
     if (year === currentYear && month === currentMonth && day > today) continue;
-    
+
     days.push({
       day: day,
       dateLabel: month + '月' + day + '日',
@@ -163,51 +447,51 @@ function generateMonthDays(year, month) {
   return days;
 }
 
-// Get available months (from Jan 2026 to current month)
 function getAvailableMonths() {
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-  
   const months = [];
-  // Start from January 2026
   const startYear = 2026;
   const startMonth = 1;
-  
+
   for (let year = startYear; year <= currentYear; year++) {
     const start = (year === startYear) ? startMonth : 1;
     const end = (year === currentYear) ? currentMonth : 12;
-    
     for (let month = start; month <= end; month++) {
       months.push({ year, month, label: year + '年' + month + '月' });
     }
   }
-  
   return months;
 }
 
-// Monthly History Card
 function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
   const availableMonths = getAvailableMonths();
-  
+
+  // Skeleton Loader for History
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <div style={{ color: 'var(--text-muted)' }}>読み込み中...</div>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', gap: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div className="skeleton" style={{ width: '150px', height: '24px' }}></div>
+          <div className="skeleton" style={{ width: '100px', height: '24px' }}></div>
+        </div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="skeleton" style={{ width: '100%', height: '40px' }}></div>
+          ))}
+        </div>
       </div>
     );
   }
 
-  // Generate base calendar for selected month
   const baseDays = generateMonthDays(selectedMonth.year, selectedMonth.month);
-  
-  // Merge with actual history data if available
   const historyData = stats?.history || [];
   const historyMap = {};
   historyData.forEach(item => {
     historyMap[item.day] = item;
   });
-  
+
   const mergedDays = baseDays.map(baseDay => {
     if (historyMap[baseDay.day]) {
       return historyMap[baseDay.day];
@@ -218,11 +502,11 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Header with Month Selector */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h3 style={{ fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-main)' }}>
           <span>📅 予測履歴</span>
         </h3>
-        
+
         {/* Month Selector */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
@@ -235,9 +519,9 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
             }}
             disabled={availableMonths.findIndex(m => m.year === selectedMonth.year && m.month === selectedMonth.month) === 0}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
-              color: 'white',
+              background: 'white',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
               padding: '0.3rem 0.6rem',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -246,7 +530,7 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
           >
             ◀
           </button>
-          
+
           <select
             value={selectedMonth.year + '-' + selectedMonth.month}
             onChange={(e) => {
@@ -254,9 +538,9 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
               onMonthChange({ year, month });
             }}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: '1px solid var(--glass-border)',
-              color: 'white',
+              background: 'white',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
               padding: '0.4rem 0.8rem',
               borderRadius: '4px',
               fontSize: '0.9rem',
@@ -264,12 +548,12 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
             }}
           >
             {availableMonths.map(m => (
-              <option key={m.year + '-' + m.month} value={m.year + '-' + m.month} style={{ background: '#1a1a2e', color: 'white' }}>
+              <option key={m.year + '-' + m.month} value={m.year + '-' + m.month}>
                 {m.label}
               </option>
             ))}
           </select>
-          
+
           <button
             onClick={() => {
               const idx = availableMonths.findIndex(m => m.year === selectedMonth.year && m.month === selectedMonth.month);
@@ -280,9 +564,9 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
             }}
             disabled={availableMonths.findIndex(m => m.year === selectedMonth.year && m.month === selectedMonth.month) === availableMonths.length - 1}
             style={{
-              background: 'rgba(255,255,255,0.1)',
-              border: 'none',
-              color: 'white',
+              background: 'white',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-main)',
               padding: '0.3rem 0.6rem',
               borderRadius: '4px',
               cursor: 'pointer',
@@ -291,7 +575,7 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
           >
             ▶
           </button>
-          
+
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
             {mergedDays.length}営業日
           </span>
@@ -310,11 +594,11 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
         <div style={{ flex: 1, overflowY: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--glass-border)', position: 'sticky', top: 0, background: 'var(--bg-dark)' }}>
-                <th style={{ padding: '0.5rem', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 'normal' }}>日付</th>
-                <th style={{ padding: '0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'normal' }}>通貨ペア</th>
-                <th style={{ padding: '0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'normal' }}>予測</th>
-                <th style={{ padding: '0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: 'normal' }}>結果</th>
+              <tr style={{ borderBottom: '1px solid var(--border-color)', position: 'sticky', top: 0, background: 'white' }}>
+                <th style={{ padding: '0.75rem 0.5rem', textAlign: 'left', color: 'var(--text-muted)', fontWeight: '500', fontSize: '0.85rem' }}>日付</th>
+                <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: '500', fontSize: '0.85rem' }}>通貨ペア</th>
+                <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: '500', fontSize: '0.85rem' }}>予測</th>
+                <th style={{ padding: '0.75rem 0.5rem', textAlign: 'center', color: 'var(--text-muted)', fontWeight: '500', fontSize: '0.85rem' }}>結果</th>
               </tr>
             </thead>
             <tbody>
@@ -322,41 +606,42 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
                 const predDisplay = getPredictionDisplay(item.prediction);
                 const resultStyle = getResultStyle(item.result);
                 return (
-                  <tr 
-                    key={index} 
-                    style={{ 
-                      borderBottom: '1px solid rgba(255,255,255,0.05)',
-                      background: index % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)'
+                  <tr
+                    key={index}
+                    style={{
+                      borderBottom: '1px solid #F3F4F6',
                     }}
                   >
-                    <td style={{ padding: '0.6rem 0.5rem' }}>
-                      <span style={{ color: 'white' }}>{item.dateLabel}</span>
+                    <td style={{ padding: '0.8rem 0.5rem' }}>
+                      <span style={{ color: 'var(--text-main)' }}>{item.dateLabel}</span>
                     </td>
-                    <td style={{ padding: '0.6rem 0.5rem', textAlign: 'center' }}>
+                    <td style={{ padding: '0.8rem 0.5rem', textAlign: 'center' }}>
                       {item.pair ? (
-                        <span style={{ 
-                          background: 'rgba(255,255,255,0.1)', 
-                          padding: '0.2rem 0.5rem', 
+                        <span style={{
+                          background: '#F3F4F6',
+                          padding: '0.2rem 0.5rem',
                           borderRadius: '4px',
-                          fontSize: '0.8rem'
+                          fontSize: '0.8rem',
+                          color: 'var(--text-main)'
                         }}>
                           {item.pair}
                         </span>
                       ) : (
-                        <span style={{ color: '#9ca3af' }}>-</span>
+                        <span style={{ color: '#D1D5DB' }}>-</span>
                       )}
                     </td>
-                    <td style={{ padding: '0.6rem 0.5rem', textAlign: 'center' }}>
-                      <span style={{ 
+                    <td style={{ padding: '0.8rem 0.5rem', textAlign: 'center' }}>
+                      <span style={{
                         color: predDisplay.color,
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '0.25rem'
+                        gap: '0.25rem',
+                        fontWeight: '500'
                       }}>
                         {predDisplay.icon} {predDisplay.text}
                       </span>
                     </td>
-                    <td style={{ padding: '0.6rem 0.5rem', textAlign: 'center', fontSize: '1.1rem', ...resultStyle }}>
+                    <td style={{ padding: '0.8rem 0.5rem', textAlign: 'center', fontSize: '1.1rem', ...resultStyle }}>
                       {item.result || 'ー'}
                     </td>
                   </tr>
@@ -370,51 +655,47 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
   );
 }
 
-function PredictionStatsCard({ stats, loading, onSync }) {
+function PredictionStatsCard({ stats, loading }) {
+  // Removed onSync prop since it's now in the header
   return (
-    <div className="card glass-panel" style={{ padding: '1rem' }}>
+    <div className="card" style={{ padding: '1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 'bold', margin: 0 }}>📊 予測成績</h3>
-        <button 
-          onClick={onSync}
-          disabled={loading}
-          style={{
-            background: 'var(--primary)',
-            border: 'none',
-            color: 'white',
-            padding: '0.4rem 0.8rem',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '0.8rem'
-          }}
-        >
-          {loading ? '読込中...' : '↻ 同期'}
-        </button>
+        <h3 style={{ fontSize: '0.95rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>📊 予測成績</h3>
       </div>
 
-      {!stats ? (
-        <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1rem 0' }}>
-          「同期」を押してデータを取得
+      {loading ? (
+        // Skeleton logic for Prediction Card
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div className="skeleton" style={{ width: '100%', height: '80px', borderRadius: '6px' }}></div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="skeleton" style={{ width: '100%', height: '60px', borderRadius: '6px' }}></div>
+            ))}
+          </div>
+        </div>
+      ) : !stats ? (
+        <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1rem 0', fontSize: '0.9rem' }}>
+          同期してデータを取得
         </div>
       ) : stats.error ? (
-        <div style={{ textAlign: 'center', color: '#ff6b6b', padding: '1rem 0' }}>
+        <div style={{ textAlign: 'center', color: 'var(--danger)', padding: '1rem 0' }}>
           データ取得エラー
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          
+
           {(() => {
             const display = getPredictionDisplay(stats.prediction);
             return (
-              <div style={{ 
-                background: 'rgba(255,255,255,0.05)',
+              <div style={{
+                background: '#F9FAFB',
                 padding: '0.75rem',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 textAlign: 'center',
-                border: '1px solid ' + display.color + '40'
+                border: '1px solid var(--border-color)'
               }}>
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>今日の予測</div>
-                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: display.color }}>
+                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: display.color, marginTop: '0.2rem' }}>
                   {display.icon} {display.text}
                 </div>
               </div>
@@ -425,8 +706,8 @@ function PredictionStatsCard({ stats, loading, onSync }) {
             <StatBox label="勝率" value={(stats.winRate || 0).toFixed(1) + '%'} highlight={stats.winRate >= 60} />
             <StatBox label="順位" value={stats.rank + ' / ' + stats.totalRank + '位'} highlight={stats.rank <= 3} />
             <StatBox label="正解" value={stats.correctPredictions + ' / ' + stats.totalPredictions} />
-            <StatBox 
-              label="回答率" 
+            <StatBox
+              label="回答率"
               value={(() => {
                 const now = new Date();
                 const year = now.getFullYear();
@@ -442,7 +723,7 @@ function PredictionStatsCard({ stats, loading, onSync }) {
                 const submitted = stats.totalPredictions || 0;
                 const rate = businessDays > 0 ? (submitted / businessDays * 100) : 0;
                 return rate.toFixed(0) + '%';
-              })()} 
+              })()}
               highlight={(() => {
                 const now = new Date();
                 const year = now.getFullYear();
@@ -457,7 +738,7 @@ function PredictionStatsCard({ stats, loading, onSync }) {
                 }
                 const submitted = stats.totalPredictions || 0;
                 return businessDays > 0 ? (submitted / businessDays * 100) >= 80 : false;
-              })()} 
+              })()}
             />
           </div>
 
@@ -470,153 +751,155 @@ function PredictionStatsCard({ stats, loading, onSync }) {
 function StatBox({ label, value, highlight }) {
   return (
     <div style={{
-      background: highlight ? 'rgba(var(--primary-h), 100, 50, 0.15)' : 'rgba(255,255,255,0.05)',
+      background: highlight ? '#ECFDF5' : 'white',
       padding: '0.5rem',
       borderRadius: '6px',
       textAlign: 'center',
-      border: highlight ? '1px solid var(--primary)' : '1px solid transparent'
+      border: highlight ? '1px solid #A7F3D0' : '1px solid var(--border-color)'
     }}>
-      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: '0.25rem' }}>{label}</div>
-      <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: highlight ? 'var(--primary-l)' : 'white' }}>{value}</div>
+      <div style={{ fontSize: '0.7rem', color: highlight ? '#065F46' : 'var(--text-muted)', marginBottom: '0.2rem' }}>{label}</div>
+      <div style={{ fontSize: '0.9rem', fontWeight: 'bold', color: highlight ? '#059669' : 'var(--text-main)' }}>{value}</div>
     </div>
   );
 }
 
 function MemoSection({ history, onAdd, onDelete }) {
-    const [text, setText] = useState('');
-    const [selectedTag, setSelectedTag] = useState(null);
-    const scrollRef = useRef(null);
+  const [text, setText] = useState('');
+  const [selectedTag, setSelectedTag] = useState(null);
+  const scrollRef = useRef(null);
 
-    const tags = [
-        { id: 'action', label: '要対応', className: 'memo-tag-action' },
-        { id: 'done', label: '完了', className: 'memo-tag-done' },
-        { id: 'info', label: '情報', className: 'memo-tag-info' },
-        { id: 'important', label: '重要', className: 'memo-tag-important' }
-    ];
+  const tags = [
+    { id: 'action', label: '要対応', className: 'memo-tag-action' },
+    { id: 'done', label: '完了', className: 'memo-tag-done' },
+    { id: 'info', label: '情報', className: 'memo-tag-info' },
+    { id: 'important', label: '重要', className: 'memo-tag-important' }
+  ];
 
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    }, [history]);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [history]);
 
-    const handleSubmit = () => {
-        onAdd(text, selectedTag);
-        setText('');
-        setSelectedTag(null);
-    };
+  const handleSubmit = () => {
+    onAdd(text, selectedTag);
+    setText('');
+    setSelectedTag(null);
+  };
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-            handleSubmit();
-        }
-    };
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      handleSubmit();
+    }
+  };
 
-    const getTagInfo = (tagId) => {
-        return tags.find(t => t.id === tagId);
-    };
+  const getTagInfo = (tagId) => {
+    return tags.find(t => t.id === tagId);
+  };
 
-    return (
-        <div style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
-            <div 
-                ref={scrollRef}
-                style={{ 
-                    flex: 1, 
-                    overflowY: 'auto', 
-                    background: 'rgba(0,0,0,0.2)', 
-                    borderRadius: 'var(--radius-md)', 
-                    padding: '0.75rem',
-                    border: '1px solid var(--glass-border)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.5rem'
-                }}
-            >
-                {history.length === 0 && (
-                    <div style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.85rem' }}>メモなし</div>
-                )}
-                {history.map(memo => {
-                    const tagInfo = memo.tag ? getTagInfo(memo.tag) : null;
-                    return (
-                        <div key={memo.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', fontSize: '0.85rem' }}>
-                            <div style={{ flex: 1 }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>{memo.date}</span>
-                                    {tagInfo && (
-                                        <span className={'memo-tag ' + tagInfo.className}>{tagInfo.label}</span>
-                                    )}
-                                </div>
-                                <div style={{ whiteSpace: 'pre-wrap' }}>{memo.content}</div>
-                            </div>
-                            <button 
-                                onClick={() => onDelete(memo.id)}
-                                style={{ background: 'transparent', border: 'none', color: '#ff6b6b', opacity: 0.6, cursor: 'pointer', fontSize: '0.75rem' }}
-                            >🗑</button>
-                        </div>
-                    );
-                })}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', width: '220px' }}>
-                {/* Tag selector */}
-                <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                    {tags.map(tag => (
-                        <button
-                            key={tag.id}
-                            onClick={() => setSelectedTag(selectedTag === tag.id ? null : tag.id)}
-                            className={'memo-tag ' + tag.className}
-                            style={{
-                                cursor: 'pointer',
-                                border: selectedTag === tag.id ? '1px solid white' : '1px solid transparent',
-                                opacity: selectedTag === tag.id ? 1 : 0.6
-                            }}
-                        >
-                            {tag.label}
-                        </button>
-                    ))}
+  return (
+    <div style={{ display: 'flex', gap: '0.75rem', flex: 1 }}>
+      <div
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          background: '#F9FAFB',
+          borderRadius: '6px',
+          padding: '0.75rem',
+          border: '1px solid var(--border-color)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '0.5rem'
+        }}
+      >
+        {history.length === 0 && (
+          <div style={{ textAlign: 'center', opacity: 0.5, fontSize: '0.85rem', marginTop: '1rem' }}>メモなし</div>
+        )}
+        {history.map(memo => {
+          const tagInfo = memo.tag ? getTagInfo(memo.tag) : null;
+          return (
+            <div key={memo.id} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', fontSize: '0.85rem' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>{memo.date}</span>
+                  {tagInfo && (
+                    <span className={'memo-tag ' + tagInfo.className}>{tagInfo.label}</span>
+                  )}
                 </div>
-                <textarea
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    placeholder="メモ... (Ctrl+Enter)"
-                    style={{
-                        flex: 1,
-                        background: 'rgba(255,255,255,0.05)',
-                        border: '1px solid var(--glass-border)',
-                        borderRadius: 'var(--radius-md)',
-                        padding: '0.5rem',
-                        color: 'inherit',
-                        resize: 'none',
-                        fontFamily: 'inherit',
-                        fontSize: '0.85rem'
-                    }}
-                />
-                <button onClick={handleSubmit} className="btn-primary" style={{ padding: '0.4rem' }}>追加</button>
+                <div style={{ whiteSpace: 'pre-wrap', color: 'var(--text-main)' }}>{memo.content}</div>
+              </div>
+              <button
+                onClick={() => onDelete(memo.id)}
+                style={{ background: 'transparent', border: 'none', color: '#EF4444', opacity: 0.6, cursor: 'pointer', fontSize: '0.75rem' }}
+              >🗑</button>
             </div>
+          );
+        })}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '220px' }}>
+        {/* Tag selector */}
+        <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
+          {tags.map(tag => (
+            <button
+              key={tag.id}
+              onClick={() => setSelectedTag(selectedTag === tag.id ? null : tag.id)}
+              className={'memo-tag ' + tag.className}
+              style={{
+                cursor: 'pointer',
+                border: selectedTag === tag.id ? '1px solid currentColor' : '1px solid transparent',
+                opacity: selectedTag === tag.id ? 1 : 0.5,
+                transition: 'all 0.1s'
+              }}
+            >
+              {tag.label}
+            </button>
+          ))}
         </div>
-    );
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="講師メモを入力... (Ctrl+Enter)"
+          style={{
+            flex: 1,
+            background: 'white',
+            border: '1px solid var(--border-color)',
+            borderRadius: '6px',
+            padding: '0.5rem',
+            color: 'var(--text-main)',
+            resize: 'none',
+            fontFamily: 'inherit',
+            fontSize: '0.85rem'
+          }}
+        />
+        <button onClick={handleSubmit} className="btn-primary" style={{ padding: '0.4rem' }}>追加</button>
+      </div>
+    </div>
+  );
 }
 
 function StatusSection({ student, onUpdate }) {
+  // predictionStats can be used here if needed, but for now just showing static/local data
   return (
-    <div className="card glass-panel" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', color: 'var(--text-muted)' }}>ステータス</h3>
+    <div className="card" style={{ padding: '1rem' }}>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)' }}>ステータス</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <StatusRow 
-          label="検証進捗" 
-          value={student.verificationProgress} 
+        <StatusRow
+          label="検証進捗"
+          value={student.verificationProgress}
           active={student.verificationProgress !== '未着手'}
         />
-        <StatusRow 
-          label="大会参加" 
-          value={student.tradeCompetition ? '参加中' : '不参加'} 
+        <StatusRow
+          label="大会参加"
+          value={student.tradeCompetition ? '参加中' : '不参加'}
           active={student.tradeCompetition}
           onClick={() => onUpdate('tradeCompetition', !student.tradeCompetition)}
         />
-        <StatusRow 
-          label="トレトレ" 
-          value={student.hasToreTore ? '有り' : '無し'} 
+        <StatusRow
+          label="トレトレ"
+          value={student.hasToreTore ? '有り' : '無し'}
           active={student.hasToreTore}
         />
       </div>
@@ -626,33 +909,34 @@ function StatusSection({ student, onUpdate }) {
 
 function StatusRow({ label, value, active, onClick }) {
   return (
-    <div 
+    <div
       onClick={onClick}
-      style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
         padding: '0.4rem 0.6rem',
-        background: active ? 'rgba(var(--primary-h), 100, 50, 0.1)' : 'rgba(255,255,255,0.03)',
+        background: active ? '#EFF6FF' : 'white',
         borderRadius: '4px',
-        cursor: onClick ? 'pointer' : 'default'
+        cursor: onClick ? 'pointer' : 'default',
+        border: active ? '1px solid #BFDBFE' : '1px solid #F3F4F6'
       }}
     >
       <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{label}</span>
-      <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: active ? 'var(--primary-l)' : 'white' }}>{value}</span>
+      <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: active ? 'var(--primary)' : 'var(--text-main)' }}>{value}</span>
     </div>
   );
 }
 
 function ProfileCard({ student }) {
   return (
-    <div className="card glass-panel" style={{ textAlign: 'center', padding: '1rem' }}>
-      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 0.75rem', border: '3px solid var(--primary)' }}>
+    <div className="card" style={{ textAlign: 'center', padding: '1.5rem 1rem' }}>
+      <div style={{ width: '80px', height: '80px', borderRadius: '50%', overflow: 'hidden', margin: '0 auto 0.75rem', border: '3px solid white', boxShadow: '0 0 0 2px var(--primary)' }}>
         <img src={student.photoUrl} alt={student.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
-      <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>{student.name}</h2>
-      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '0.75rem' }}>{student.status}</div>
-      
+      <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.25rem', color: 'var(--text-main)' }}>{student.name}</h2>
+      <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginBottom: '1rem' }}>{student.status}</div>
+
       <div style={{ textAlign: 'left', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
         <InfoRow label="生年月日" value={student.dob} />
         <InfoRow label="トレード歴" value={student.tradeHistory} />
@@ -664,9 +948,9 @@ function ProfileCard({ student }) {
 
 function InfoRow({ label, value }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.2rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #F3F4F6', paddingBottom: '0.4rem', marginBottom: '0.2rem' }}>
       <span style={{ color: 'var(--text-muted)' }}>{label}</span>
-      <span style={{ fontWeight: 500 }}>{value}</span>
+      <span style={{ fontWeight: 500, color: 'var(--text-main)' }}>{value}</span>
     </div>
   );
 }
@@ -674,19 +958,19 @@ function InfoRow({ label, value }) {
 function CredentialsCard({ student }) {
   const [showPw, setShowPw] = useState(false);
   return (
-    <div className="card glass-panel" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>FXTF ログイン</h3>
+    <div className="card" style={{ padding: '1rem' }}>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text-main)' }}>FXTF ログイン</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.85rem' }}>
-        <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem', borderRadius: '4px' }}>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display:'block' }}>ID</span>
-          <div style={{ fontFamily: 'monospace' }}>{student.fxtfId}</div>
+        <div style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>ID</span>
+          <div style={{ fontFamily: 'monospace', color: 'var(--text-main)' }}>{student.fxtfId}</div>
         </div>
-        <div 
+        <div
           onClick={() => setShowPw(!showPw)}
-          style={{ background: 'rgba(0,0,0,0.2)', padding: '0.4rem', borderRadius: '4px', cursor: 'pointer' }}
+          style={{ background: '#F9FAFB', padding: '0.5rem', borderRadius: '4px', cursor: 'pointer', border: '1px solid var(--border-color)' }}
         >
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display:'block' }}>PW ({showPw ? '隠す' : '表示'})</span>
-          <div style={{ fontFamily: 'monospace' }}>{showPw ? student.fxtfPw : '••••••'}</div>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem', display: 'block' }}>PW ({showPw ? '隠す' : '表示'})</span>
+          <div style={{ fontFamily: 'monospace', color: 'var(--text-main)' }}>{showPw ? student.fxtfPw : '••••••'}</div>
         </div>
       </div>
     </div>
@@ -695,10 +979,131 @@ function CredentialsCard({ student }) {
 
 function DiscordCard({ student }) {
   return (
-    <div className="card glass-panel" style={{ padding: '1rem' }}>
-      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}>Discord</h3>
-      <div style={{ fontSize: '0.85rem', color: 'var(--primary-l)' }}>@{student.discordName}</div>
+    <div className="card" style={{ padding: '1rem' }}>
+      <h3 style={{ fontSize: '0.9rem', marginBottom: '0.5rem', fontWeight: '600', color: 'var(--text-main)' }}>Discord</h3>
+      <div style={{ fontSize: '0.85rem', color: '#5865F2', fontWeight: '500' }}>@{student.discordName}</div>
     </div>
   );
 }
+
+function OutputUrlCard({ student, onUpdate }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [url, setUrl] = useState(student.outputUrl || '');
+
+  const handleSave = () => {
+    onUpdate('outputUrl', url);
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="card" style={{ padding: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>Note / ブログ</h3>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--text-muted)',
+              fontSize: '0.8rem',
+              padding: '0.2rem'
+            }}
+            title="編集"
+          >
+            ✏️
+          </button>
+        )}
+      </div>
+
+      {isEditing ? (
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="URLを入力"
+            style={{
+              flex: 1,
+              padding: '0.3rem',
+              fontSize: '0.85rem',
+              borderRadius: '4px',
+              border: '1px solid var(--border-color)'
+            }}
+          />
+          <button
+            onClick={handleSave}
+            title="保存"
+            style={{
+              background: '#10B981',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '0.3rem 0.6rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✓
+          </button>
+          <button
+            onClick={() => {
+              setIsEditing(false);
+              setUrl(student.outputUrl || '');
+            }}
+            title="キャンセル"
+            style={{
+              background: '#F3F4F6',
+              color: 'var(--text-muted)',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '0.3rem 0.6rem',
+              cursor: 'pointer'
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      ) : (
+        <div>
+          {student.outputUrl ? (
+            <a
+              href={student.outputUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                fontSize: '0.85rem',
+                color: '#3B82F6',
+                textDecoration: 'none',
+                wordBreak: 'break-all',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.2rem'
+              }}
+            >
+              🔗 <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
+            </a>
+          ) : (
+            <div
+              onClick={() => setIsEditing(true)}
+              style={{
+                fontSize: '0.8rem',
+                color: 'var(--text-muted)',
+                cursor: 'pointer',
+                border: '1px dashed var(--border-color)',
+                padding: '0.5rem',
+                borderRadius: '4px',
+                textAlign: 'center'
+              }}
+            >
+              + URL追加
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 

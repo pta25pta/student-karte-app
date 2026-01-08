@@ -1,262 +1,202 @@
 ﻿import { useState, useEffect, useMemo } from 'react';
 
 export function HomeView({ students = [], studentStats = {}, onNavigate }) {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  // --- Data Processing -----------------------------------------
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [selectedTerm, setSelectedTerm] = useState('all');
+  const [alertThreshold, setAlertThreshold] = useState(50); // Term filter for alerts
   
-  // Update time every second
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Calculate greeting directly from currentTime (no state needed)
-  const hour = currentTime.getHours();
-  let greeting = 'お疲れ様です';
-  if (hour < 12) greeting = 'おはようございます';
-  else if (hour >= 18) greeting = 'お疲れ様でした';
-
-  const formatDate = (date) => {
-    const days = ['日', '月', '火', '水', '木', '金', '土'];
-    return date.getFullYear() + '年' + (date.getMonth() + 1) + '月' + date.getDate() + '日 (' + days[date.getDay()] + ')';
-  };
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-  };
-
-  // Quotes
-  const quotes = [
-    "「継続は力なり」 - 小さな積み重ねが大きな成果を生みます。",
-    "「失敗は成功のもと」 - トレードの負けは学びの宝庫です。",
-    "「規律を守る」 - ルールを守ることが生き残る唯一の道です。",
-    "「焦らない」 - チャンスは必ずまた来ます。",
-    "「感情をコントロールする」 - 冷静な判断が利益を生みます。"
-  ];
-  // Simple daily quote based on date
-  const todayQuoteIndex = new Date().getDate() % quotes.length;
-
   // Real data calculations
-  const stats = useMemo(() => {
-    if (!students.length) return {
-      activeCount: '-',
-      term1Count: '-',
-      avgWinRate: '-',
-      positiveBalanceCount: '-'
-    };
-    
-    // Calculate Term 1 students
-    const term1 = students.filter(s => (s.term || 1) === 1).length;
+  const dashboardData = useMemo(() => {
+    // 1. Basic Counts
+    const activeCount = students.length;
+    const term1Count = students.filter(s => (s.term || 1) === 1).length;
 
-    // Calculate Average Win Rate & Positive Balance Count
+    // 2. Performance Stats
     let totalWinRate = 0;
     let countWithStats = 0;
-    let positiveCount = 0;
+    let lowPerformanceStudents = [];
+    let noDataStudents = [];
 
     students.forEach(s => {
       const stat = studentStats[s.id];
-      if (stat && !stat.error && stat.accuracy !== undefined) {
-          // Assuming 'accuracy' field is used for 'Submission Rate' based on previous context 
-          // (Wait, 'accuracy' from GAS usually means prediction accuracy, but we changed UI validation logic.
-          // Let's stick to what's available. If GAS returns 'winRate' we use that.)
-          
-          if (stat.winRate !== undefined) {
-             totalWinRate += parseFloat(stat.winRate) || 0;
+      // Check if stat exists and has valid winRate
+      if (stat && !stat.error && stat.winRate !== undefined) {
+         const rate = parseFloat(stat.winRate) || 0;
+         const count = stat.totalPredictions || 0;
+         
+         // Only count stats if they have actually played
+         if (count > 0) {
+             totalWinRate += rate;
              countWithStats++;
-             
-             // Simple logic for positive balance (e.g. win rate > 50%)
-             if ((parseFloat(stat.winRate) || 0) >= 50) {
-                 positiveCount++;
-             }
-          }
+         }
+
+         // Alert Logic: Low Win Rate (Dynamic Threshold)
+         if (rate < alertThreshold && count > 0) {
+            lowPerformanceStudents.push({ ...s, currentWinRate: rate, type: 'low_win_rate' });
+         }
       }
     });
 
     const avgWinRate = countWithStats > 0 ? (totalWinRate / countWithStats).toFixed(1) + '%' : '-';
     
+    // Combine Alerts - Only include students WITH data who have low performance
+    // Get unique terms
+    const uniqueTerms = [...new Set(students.map(s => s.term || 1))].sort((a,b) => a - b);
+
+    const alerts = [
+        ...lowPerformanceStudents
+    ].sort((a, b) => (a.currentWinRate || 0) - (b.currentWinRate || 0));
+
     return {
-      activeCount: students.length + '名',
-      term1Count: term1 + '名',
-      avgWinRate: avgWinRate,
-      positiveBalanceCount: positiveCount > 0 ? positiveCount + '名' : '-'
+      activeCount,
+      term1Count,
+      avgWinRate,
+      alerts,
+      uniqueTerms
     };
-  }, [students, studentStats]);
+  }, [students, studentStats, alertThreshold]);
 
-
-  // Get next event (schedule)
-  const [nextEvent, setNextEvent] = useState(null);
+  // Schedule Logic (Next 3 Events)
   useEffect(() => {
     try {
       const savedSchedule = localStorage.getItem('scheduleData');
       if (savedSchedule) {
         const schedule = JSON.parse(savedSchedule);
-        // Find next event
         const now = new Date();
-        const upcoming = schedule.events
-          .map(e => ({ ...e, dateObj: new Date(e.start) }))
-          .filter(e => e.dateObj > now)
-          .sort((a, b) => a.dateObj - b.dateObj)[0];
-        setNextEvent(upcoming);
+        const allEvents = schedule.flatMap(t => t.events || []);
+        
+        // Show events for current month
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const monthEvents = allEvents
+          .map(e => ({ ...e, dateObj: new Date(e.start || e.date) }))
+          .filter(e => e.dateObj.getMonth() === currentMonth && e.dateObj.getFullYear() === currentYear)
+          .sort((a, b) => a.dateObj - b.dateObj);
+        setUpcomingEvents(monthEvents);
       }
     } catch (e) {
       console.error('Failed to load schedule', e);
     }
   }, []);
 
+  const filteredAlerts = selectedTerm === 'all' 
+    ? dashboardData.alerts 
+    : dashboardData.alerts.filter(a => (a.term || 1) === parseInt(selectedTerm));
+
   return (
-    <div className="h-full w-full flex-col gap-md animate-fade-in" style={{ overflowY: 'auto' }}>
+    <div className="h-full w-full animate-fade-in" style={{ paddingRight: '0.5rem', overflowY: 'auto' }}>
       
-      {/* Hero Section */}
-      <div 
-        className="card"
-        style={{ 
-          background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-          color: 'white',
-          padding: '2rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          boxShadow: '0 10px 25px -5px rgba(var(--primary-h), 100, 50, 0.4)'
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
-            {greeting}
-          </h1>
-          <p style={{ opacity: 0.9, fontSize: '1.1rem' }}>
-            {formatDate(currentTime)}
-          </p>
-          <div style={{ marginTop: '1rem', background: 'rgba(255,255,255,0.2)', padding: '0.5rem 1rem', borderRadius: '8px', fontSize: '0.9rem', display: 'inline-block' }}>
-            💡 {quotes[todayQuoteIndex]}
-          </div>
-        </div>
-        <div style={{ fontSize: '3.5rem', fontWeight: 'bold', fontFamily: 'monospace', opacity: 0.9 }}>
-          {formatTime(currentTime)}
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-        <StatCard 
-          icon="👥" 
-          label="在籍生徒" 
-          value={stats.activeCount} 
-          sublabel="全生徒数"
-          color="#8b5cf6" 
-        />
-        <StatCard 
-          icon="📚" 
-          label="1期生" 
-          value={stats.term1Count} 
-          sublabel="学習中"
-          color="#3b82f6" 
-        />
-        <StatCard 
-          icon="📅" 
-          label="次の予定" 
-          value={nextEvent ? nextEvent.title : '予定なし'} 
-          sublabel={nextEvent ? new Date(nextEvent.start).toLocaleDateString() : '-'}
-          color="#10b981" 
-        />
-        <StatCard 
-          icon="📈" 
-          label="平均勝率" 
-          value={stats.avgWinRate} 
-          sublabel="同期データより"
-          color="#f59e0b" 
-        />
-      </div>
-
-      {/* Main Content Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1.5rem', flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         
-        {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          {/* Quick Actions */}
-          <section>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              ⚡ クイックアクション
-            </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '1rem' }}>
-               <ActionButton 
-                 icon="📝" 
-                 label="生徒リスト" 
-                 onClick={() => onNavigate && onNavigate('student_list')} 
-               />
-               <ActionButton 
-                 icon="📢" 
-                 label="全体アナウンス" 
-                 onClick={() => alert('機能準備中です')} 
-               />
-               <ActionButton 
-                 icon="➕" 
-                 label="生徒追加" 
-                 onClick={() => alert('機能準備中です')} 
-               />
-               <ActionButton 
-                 icon="⚙️" 
-                 label="システム設定" 
-                 onClick={() => onNavigate && onNavigate('settings')} 
-               />
-            </div>
-          </section>
+        {/* MAIN: Split View */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '1rem', minHeight: '300px' }}>
+           
+           {/* LEFT: Priority Alerts Panel */}
+           <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+              <div style={{ padding: '0.75rem 1rem', background: '#F9FAFB', borderBottom: '1px solid var(--border-color)', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                 <h2 style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0, display:'flex', alignItems:'center', gap:'0.5rem' }}>
+                   🚨 要注意生徒
+                   {dashboardData.alerts.length > 0 && (
+                     <span style={{ background: '#EF4444', color: 'white', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '10px' }}>{dashboardData.alerts.length}</span>
+                   )}
+                 </h2>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                   <select value={selectedTerm} onChange={(e) => setSelectedTerm(e.target.value)} style={{ fontSize: '0.8rem', padding: '0.2rem 0.4rem', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                     <option value="all">全期</option>
+                     {dashboardData.uniqueTerms.map(t => <option key={t} value={t}>{t}期</option>)}
+                   </select>
+                                      <div style={{ display:'flex', alignItems:'center', gap:'0.25rem', fontSize:'0.75rem', color:'var(--text-muted)' }}>
+                     <span>勝率</span>
+                     <input 
+                       type="number" 
+                       min="0" 
+                       max="100" 
+                       value={alertThreshold} 
+                       onChange={(e) => setAlertThreshold(Number(e.target.value))} 
+                       style={{ width:'40px', padding:'0.1rem', borderRadius:'4px', border:'1px solid var(--border-color)', textAlign:'center' }}
+                     />
+                     <span>%未満</span>
+                   </div>
+                 </div>
+              </div>
+              <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem' }}>
+                                  {filteredAlerts.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                       {filteredAlerts.map(s => (
+                         <div key={s.id} style={{ 
+                           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                           padding: '0.75rem', borderRadius: '6px', border: '1px solid #E5E7EB',
+                           background: '#FFFFFF'
+                         }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                               <div style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>{s.name}</div>
+                               <div style={{ fontSize: '0.75rem', color: '#6B7280' }}>ID: {s.id}</div>
+                            </div>
+                            <div>
+                               {s.type === 'low_win_rate' && (
+                                 <span style={{ fontSize: '0.8rem', fontWeight: 'bold', color: '#DC2626', background: '#FEE2E2', padding: '2px 8px', borderRadius: '4px' }}>
+                                   勝率 {s.currentWinRate}%
+                                 </span>
+                               )}
+                               {s.type === 'no_data' && (
+                                 <span style={{ fontSize: '0.8rem', color: '#6B7280', background: '#E5E7EB', padding: '2px 8px', borderRadius: '4px' }}>
+                                   データなし
+                                 </span>
+                               )}
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                 ) : (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: '#10B981', display:'flex', flexDirection:'column', alignItems:'center', gap:'0.5rem' }}>
+                       <span style={{ fontSize: '1.5rem' }}>🎉</span>
+                       <span>アラートはありません。全員順調です！</span>
+                    </div>
+                 )}
+              </div>
+           </div>
 
-          {/* Today's Checklist */}
-          <section className="glass-panel" style={{ padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              ✅ 今日のチェックリスト
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <PersistentCheckItem id="chk_market" label="朝のマーケット確認" />
-              <PersistentCheckItem id="chk_feedback" label="前日の日誌フィードバック" />
-              <PersistentCheckItem id="chk_follow" label="未提出者のフォロー" />
-              <PersistentCheckItem id="chk_weekly" label="週報の作成（金曜日）" />
-            </div>
-          </section>
-
+           {/* RIGHT: Compact Schedule */}
+           <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
+              <div style={{ padding: '0.75rem 1rem', background: '#F9FAFB', borderBottom: '1px solid var(--border-color)' }}>
+                 <h2 style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>📅 今月の予定</h2>
+              </div>
+              <div style={{ flex: 1, padding: '0.5rem' }}>
+                 {upcomingEvents.length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                       {upcomingEvents.map((evt, i) => (
+                          <div key={i} onClick={() => onNavigate && onNavigate('schedule')} style={{ padding: '0.75rem', border: '1px solid var(--border-color)', borderRadius: '6px', cursor: 'pointer' }}>
+                             <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 'bold' }}>
+                               {new Date(evt.start || evt.date).toLocaleDateString()} {new Date(evt.start || evt.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                             </div>
+                             <div style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '0.2rem' }}>{evt.title}</div>
+                             {evt.type && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{evt.type}</div>}
+                          </div>
+                       ))}
+                    </div>
+                 ) : (
+                    <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>予定なし</div>)}
+              </div>
+              {/* Simple Actions */}
+              <div style={{ padding: '0.75rem', borderTop: '1px solid var(--border-color)', display: 'grid', gridTemplateColumns:'1fr', gap:'0.5rem' }}>
+                  <button 
+                    onClick={() => onNavigate && onNavigate('schedule')}
+                    className="btn"
+                    style={{ background: 'white', border: '1px solid var(--border-color)', color:'var(--text-main)', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem' }}
+                  >
+                    <span>📅</span> スケジュール管理へ
+                  </button>
+              </div>
+           </div>
+        
         </div>
 
-        {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          
-          {/* Next Event Card */}
-          <section className="glass-panel" style={{ padding: '1.5rem', background: 'linear-gradient(to bottom right, var(--glass-bg), rgba(var(--primary-h), 100, 50, 0.1))' }}>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem', color: 'var(--primary-l)' }}>
-              📅 直近のスケジュール
-            </h2>
-            {nextEvent ? (
-              <div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '0.25rem' }}>
-                  {nextEvent.title}
-                </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-                  {new Date(nextEvent.start).toLocaleString()}
-                </div>
-                <div style={{ fontSize: '0.9rem', opacity: 0.8 }}>
-                  {nextEvent.type === 'lecture' ? '講義' : nextEvent.type === 'meeting' ? 'ミーティング' : 'その他'}
-                </div>
-              </div>
-            ) : (
-              <div style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '1rem' }}>
-                予定はありません
-              </div>
-            )}
-          </section>
-
-          {/* Overall Summary */}
-          <section className="glass-panel" style={{ padding: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '1rem' }}>
-              📈 全体サマリー
-            </h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-               <SummaryRow label="平均勝率" value={stats.avgWinRate} />
-               <SummaryRow label="勝ち越し" value={stats.positiveBalanceCount} />
-            </div>
-            <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-               ※データは「全員同期」で更新
-            </div>
-          </section>
-
+        {/* BOTTOM: Compact Quick Actions */}
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+           <CompactButton icon="📝" label="生徒リスト" onClick={() => onNavigate && onNavigate('student_list')} />
+           <CompactButton icon="⚙️" label="システム設定" onClick={() => onNavigate && onNavigate('settings')} />
+           <CompactButton icon="🔄" label="データ同期" onClick={() => document.getElementById('btn-sync-all')?.click()} />
         </div>
 
       </div>
@@ -264,101 +204,49 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
   );
 }
 
-function StatCard({ icon, label, value, sublabel, color }) {
-  return (
-    <div className="glass-panel" style={{ padding: '1.25rem', display: 'flex', alignItems: 'center', gap: '1rem', borderLeft: '4px solid ' + color }}>
-      <div style={{ fontSize: '2rem', background: 'rgba(255,255,255,0.1)', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px' }}>
-        {icon}
-      </div>
-      <div>
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{label}</div>
-        <div style={{ fontSize: '1.4rem', fontWeight: 'bold', lineHeight: '1.2' }}>{value}</div>
-        <div style={{ fontSize: '0.75rem', opacity: 0.7 }}>{sublabel}</div>
-      </div>
-    </div>
-  );
+// Sub-components
+function CompactButton({ icon, label, onClick }) {
+    return (
+        <button 
+          onClick={onClick}
+          className="card" 
+          style={{ 
+              padding: '0.75rem 1.5rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.75rem', 
+              cursor: 'pointer',
+              border: '1px solid var(--border-color)',
+              fontWeight: '500',
+              color: 'var(--text-main)',
+              flex: '1',
+              justifyContent: 'center',
+              minWidth: '150px'
+          }}
+          onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--primary)'}
+          onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border-color)'}
+        >
+            <span style={{ fontSize: '1.2rem' }}>{icon}</span>
+            <span>{label}</span>
+        </button>
+    );
 }
 
-function ActionButton({ icon, label, onClick }) {
-  return (
-    <button 
-      onClick={onClick}
-      className="glass-panel"
-      style={{ 
-        padding: '1rem', 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center', 
-        justifyContent: 'center', 
-        gap: '0.5rem',
-        cursor: 'pointer',
-        transition: 'transform 0.2s',
-        border: '1px solid var(--glass-border)'
-      }}
-      onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
-      onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-    >
-      <div style={{ fontSize: '1.5rem' }}>{icon}</div>
-      <div style={{ fontSize: '0.85rem' }}>{label}</div>
-    </button>
-  );
-}
 
-// CheckItem with Persistence
-function PersistentCheckItem({ id, label }) {
-  // Initialize state from localStorage
-  const [checked, setChecked] = useState(() => {
-    return localStorage.getItem('checklist_' + id) === 'true';
-  });
 
-  // Save to localStorage whenever changed
-  useEffect(() => {
-    localStorage.setItem('checklist_' + id, checked);
-  }, [checked, id]);
 
-  return (
-    <div 
-      onClick={() => setChecked(!checked)}
-      style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        gap: '0.75rem', 
-        padding: '0.75rem', 
-        background: checked ? 'rgba(var(--primary-h), 100, 50, 0.1)' : 'rgba(255,255,255,0.03)',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        transition: 'all 0.2s'
-      }}
-    >
-      <div style={{ 
-        width: '20px', 
-        height: '20px', 
-        borderRadius: '50%', 
-        border: checked ? 'none' : '2px solid var(--text-muted)',
-        background: checked ? 'var(--primary)' : 'transparent',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'white',
-        fontSize: '0.8rem'
-      }}>
-        {checked && '✓'}
-      </div>
-      <div style={{ 
-        textDecoration: checked ? 'line-through' : 'none',
-        color: checked ? 'var(--text-muted)' : 'inherit'
-      }}>
-        {label}
-      </div>
-    </div>
-  );
-}
 
-function SummaryRow({ label, value }) {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
-      <span style={{ color: 'var(--text-muted)' }}>{label}</span>
-      <span style={{ fontWeight: 'bold' }}>{value}</span>
-    </div>
-  );
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
