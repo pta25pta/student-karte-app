@@ -938,7 +938,7 @@ function ProfileCard({ student, onUpdate }) {
     { id: 'S', color: '#F59E0B', label: 'S' },
     { id: 'A', color: '#3B82F6', label: 'A' },
     { id: 'B', color: '#10B981', label: 'B' },
-    { id: 'C', color: '#F97316', label: 'C' },
+    { id: 'C', color: '#9CA3AF', label: 'C' },
   ];
 
   const currentRank = ranks.find(r => r.id === rank) || ranks[3];
@@ -1286,6 +1286,7 @@ function OutputUrlCard({ student, onUpdate }) {
     </div>
   );
 }
+
 
 
 
