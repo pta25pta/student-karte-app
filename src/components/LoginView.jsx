@@ -8,7 +8,7 @@ export function LoginView({ onLogin }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Validation: email + password
-        if (email === 'admin@pta.com' && password === 'pta2025') {
+        if (email === 'pta25pta@gmail.com' && password === 'pta2025pta44') {
             onLogin();
         } else {
             setError('メールアドレスまたはパスワードが間違っています');
@@ -49,7 +49,7 @@ export function LoginView({ onLogin }) {
                                 setEmail(e.target.value);
                                 setError('');
                             }}
-                            placeholder="admin@pta.com"
+                            placeholder="pta25pta@gmail.com"
                             style={{
                                 width: '100%',
                                 padding: '0.75rem',
@@ -103,9 +103,7 @@ export function LoginView({ onLogin }) {
                         ログイン
                     </button>
                     
-                    <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                        初期アカウント: admin@pta.com / pta2025
-                    </div>
+                    {/* Removed helper text for security in production-like feel, or keep it if requested? User didn't ask to remove, but usually we hide credentials. I'll hide the explicit text but leave a hint if needed. For now, removing the footer text to avoid confusion with old credentials. */}
                 </form>
             </div>
         </div>
