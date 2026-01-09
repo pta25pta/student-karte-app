@@ -1,16 +1,17 @@
 ﻿import { useState } from 'react';
 
 export function LoginView({ onLogin }) {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Simple hardcoded password check
-        if (password === 'pta2025') {
+        // Validation: email + password
+        if (email === 'admin@pta.com' && password === 'pta2025') {
             onLogin();
         } else {
-            setError('パスワードが間違っています');
+            setError('メールアドレスまたはパスワードが間違っています');
         }
     };
 
@@ -34,18 +35,21 @@ export function LoginView({ onLogin }) {
                 textAlign: 'center'
             }}>
                 <h1 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', color: 'var(--primary)' }}>Student Karte</h1>
-                <p style={{ marginBottom: '2rem', color: 'var(--text-muted)' }}>パスワードを入力してログインしてください</p>
+                <p style={{ marginBottom: '2rem', color: 'var(--text-muted)' }}>管理者情報を入力してログイン</p>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <div>
+                    
+                    {/* Email Input */}
+                    <div style={{ textAlign: 'left' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold' }}>メールアドレス</label>
                         <input
-                            type="password"
-                            value={password}
+                            type="email"
+                            value={email}
                             onChange={(e) => {
-                                setPassword(e.target.value);
+                                setEmail(e.target.value);
                                 setError('');
                             }}
-                            placeholder="パスワード"
+                            placeholder="admin@pta.com"
                             style={{
                                 width: '100%',
                                 padding: '0.75rem',
@@ -56,12 +60,36 @@ export function LoginView({ onLogin }) {
                             }}
                             autoFocus
                         />
-                        {error && <div style={{ color: 'var(--danger)', fontSize: '0.875rem', marginTop: '0.5rem', textAlign: 'left' }}>{error}</div>}
                     </div>
+
+                    {/* Password Input */}
+                    <div style={{ textAlign: 'left' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', fontWeight: 'bold' }}>パスワード</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => {
+                                setPassword(e.target.value);
+                                setError('');
+                            }}
+                            placeholder="••••••••"
+                            style={{
+                                width: '100%',
+                                padding: '0.75rem',
+                                borderRadius: 'var(--radius-md)',
+                                border: '1px solid var(--border-color)',
+                                fontSize: '1rem',
+                                outline: 'none'
+                            }}
+                        />
+                    </div>
+
+                    {error && <div style={{ color: 'var(--danger)', fontSize: '0.875rem', textAlign: 'left' }}>{error}</div>}
 
                     <button
                         type="submit"
                         style={{
+                            marginTop: '1rem',
                             padding: '0.75rem',
                             background: 'var(--primary)',
                             color: 'white',
@@ -69,12 +97,15 @@ export function LoginView({ onLogin }) {
                             borderRadius: 'var(--radius-md)',
                             fontSize: '1rem',
                             fontWeight: '600',
-                            cursor: 'pointer',
-                            marginTop: '0.5rem'
+                            cursor: 'pointer'
                         }}
                     >
                         ログイン
                     </button>
+                    
+                    <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        初期アカウント: admin@pta.com / pta2025
+                    </div>
                 </form>
             </div>
         </div>
