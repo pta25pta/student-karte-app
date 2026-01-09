@@ -312,7 +312,7 @@ function App() {
             {/* Toast Container */}
             <div className="toast-container">
                 {toasts.map(toast => (
-                    <div key={toast.id} className={	oast toast-}>
+                    <div key={toast.id} className={`toast toast-${toast.type}`}>
                         {toast.type === 'success' && '✅'}
                         {toast.type === 'error' && '⚠️'}
                         {toast.type === 'info' && 'ℹ️'}
