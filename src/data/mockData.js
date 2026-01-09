@@ -26,6 +26,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987798', name: 'メイン口座', loginId: '201987798', password: 'zomm0vn' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -55,6 +56,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986479', name: 'メイン口座', loginId: '201986479', password: '8npvohg' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -84,6 +86,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987007', name: 'メイン口座', loginId: '201987007', password: 'ybt2bfv' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -113,6 +116,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987628', name: 'メイン口座', loginId: '201987628', password: 'zef3jgm' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -142,6 +146,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986730', name: 'メイン口座', loginId: '201986730', password: 'l0shamj' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -200,6 +205,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986462', name: 'メイン口座', loginId: '201986462', password: 'zd5goot' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -229,6 +235,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987587', name: 'メイン口座', loginId: '201987587', password: '8ciqsxn' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -258,6 +265,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201988026', name: 'メイン口座', loginId: '201988026', password: 'h1wgaos' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -287,6 +295,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986491', name: 'メイン口座', loginId: '201986491', password: '0atdxzx' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -316,6 +325,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987497', name: 'メイン口座', loginId: '201987497', password: 'nis8nvy' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -345,6 +355,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986957', name: 'メイン口座', loginId: '201986957', password: 'dy1tuhl' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -374,6 +385,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987059', name: 'メイン口座', loginId: '201987059', password: 'cqwm1mg' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -403,6 +415,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986559', name: 'メイン口座', loginId: '201986559', password: 'cmo5exv' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -432,6 +445,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986619', name: 'メイン口座', loginId: '201986619', password: 'nefc8ws' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -461,6 +475,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986660', name: 'メイン口座', loginId: '201986660', password: '0afuhyc' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -490,6 +505,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986727', name: 'メイン口座', loginId: '201986727', password: 'voh1krd' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -519,6 +535,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986958', name: 'メイン口座', loginId: '201986958', password: 'ld0rrwa' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -548,6 +565,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986507', name: 'メイン口座', loginId: '201986507', password: 'rwrl5uo' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -577,6 +595,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201986439', name: 'メイン口座', loginId: '201986439', password: '1chneii' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -606,6 +625,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987243', name: 'メイン口座', loginId: '201987243', password: '0qqhfjr' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -635,6 +655,7 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987361', name: 'メイン口座', loginId: '201987361', password: 'g3mpqjh' }],
   records: [],
   memoHistory: [],
   term: 1
@@ -664,9 +685,8 @@ export const mockStudents = [{
   dailyPrediction: false,
   verificationProgress: '未着手',
   tradeCompetition: false,
+  fxtfAccounts: [{ id: '201987883', name: 'メイン口座', loginId: '201987883', password: '7cxlcsg' }],
   records: [],
   memoHistory: [],
   term: 1
 },];
-
-
