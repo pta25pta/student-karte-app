@@ -4,6 +4,7 @@ import { StudentDetailView } from './components/StudentDetailView';
 import { HomeView } from './components/HomeView';
 import { ScheduleView } from './components/ScheduleView';
 import { SettingsView } from './components/SettingsView';
+import { LoginView } from './components/LoginView';
 import { mockStudents } from './data/mockData';
 import { ExternalDataService } from './services/ExternalDataService';
 
@@ -12,6 +13,11 @@ function App() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentView, setCurrentView] = useState('home');
 
+    // Auth State
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return localStorage.getItem('isAuthenticated') === 'true';
+    });
+    
     // Centralized student stats storage
     const [studentStats, setStudentStats] = useState(() => {
         try {
@@ -44,6 +50,20 @@ function App() {
             setToasts(prev => prev.filter(t => t.id !== id));
         }, 3000);
     }, []);
+
+    // Auth Handlers
+    const handleLogin = () => {
+        setIsAuthenticated(true);
+        localStorage.setItem('isAuthenticated', 'true');
+    };
+
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+        localStorage.removeItem('isAuthenticated');
+        setSelectedStudent(null);
+        setCurrentView('home');
+        setIsSidebarOpen(false);
+    };
 
     // Bulk sync all students
     const handleBulkSync = useCallback(async () => {
@@ -91,10 +111,10 @@ function App() {
     // Auto-Sync on launch
     useEffect(() => {
         const autoSync = localStorage.getItem('autoSync') === 'true';
-        if (autoSync) {
+        if (autoSync && isAuthenticated) {
             setTimeout(() => handleBulkSync(), 0);
         }
-    }, [handleBulkSync]);
+    }, [handleBulkSync, isAuthenticated]);
 
     const handleSelect = (student) => {
         setSelectedStudent(student);
@@ -121,6 +141,10 @@ function App() {
         setCurrentView('settings');
         setIsSidebarOpen(false);
     };
+
+    if (!isAuthenticated) {
+        return <LoginView onLogin={handleLogin} />;
+    }
 
     return (
         <div className="w-full h-full" style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-main)' }}>
@@ -190,6 +214,19 @@ function App() {
                         transition: 'all 0.2s'
                     }}>
                         設定
+                    </button>
+                    <button onClick={handleLogout} style={{
+                        color: 'var(--danger)',
+                        fontWeight: 'normal',
+                        fontSize: '0.9rem',
+                        padding: '0.5rem 1rem',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'transparent',
+                        border: '1px solid var(--border-color)',
+                        marginLeft: '0.5rem',
+                        cursor: 'pointer'
+                    }}>
+                        ログアウト
                     </button>
                 </div>
             </header>
@@ -275,7 +312,7 @@ function App() {
             {/* Toast Container */}
             <div className="toast-container">
                 {toasts.map(toast => (
-                    <div key={toast.id} className={`toast toast-${toast.type}`}>
+                    <div key={toast.id} className={	oast toast-}>
                         {toast.type === 'success' && '✅'}
                         {toast.type === 'error' && '⚠️'}
                         {toast.type === 'info' && 'ℹ️'}
@@ -288,6 +325,3 @@ function App() {
 }
 
 export default App;
-
-
-
