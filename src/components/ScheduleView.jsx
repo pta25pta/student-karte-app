@@ -241,8 +241,8 @@ export function ScheduleView() {
                         padding: '0.5rem 1rem',
                         borderRadius: '20px',
                         border: selectedTermId === term.id ? '1px solid var(--primary)' : '1px solid transparent',
-                        background: selectedTermId === term.id ? 'var(--primary-d)' : 'rgba(255,255,255,0.05)',
-                        color: 'white',
+                        background: selectedTermId === term.id ? 'var(--primary)' : 'var(--bg-secondary)',
+                        color: 'var(--text-main)',
                         fontWeight: selectedTermId === term.id ? 'bold' : 'normal',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
@@ -260,7 +260,7 @@ export function ScheduleView() {
                          transform: 'translateY(-50%)',
                          background: 'transparent',
                          border: 'none',
-                         color: 'rgba(255,255,255,0.4)',
+                         color: selectedTermId === term.id ? 'rgba(255,255,255,0.8)' : 'var(--text-muted)',
                          fontSize: '0.8rem',
                          cursor: 'pointer',
                          padding: '0 4px'
@@ -280,7 +280,7 @@ export function ScheduleView() {
                  borderRadius: '50%', 
                  background: 'var(--glass-border)', 
                  border: 'none', 
-                 color: 'white',
+                 color: 'var(--text-main)',
                  cursor: 'pointer' 
              }}
              title="期の追加"
@@ -309,7 +309,7 @@ export function ScheduleView() {
               type="date" 
               value={newDate} 
               onChange={(e) => setNewDate(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <div style={{ flex: 2, minWidth: '200px' }}>
@@ -319,7 +319,7 @@ export function ScheduleView() {
               placeholder="イベント名"
               value={newTitle} 
               onChange={(e) => setNewTitle(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <div style={{ flex: 3, minWidth: '200px' }}>
@@ -329,14 +329,14 @@ export function ScheduleView() {
               placeholder="10:00~12:00 etc"
               value={newDesc} 
               onChange={(e) => setNewDesc(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--glass-border)', color: 'white' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <button 
             onClick={handleManualAdd}
             style={{ 
               background: 'var(--primary)', 
-              color: 'white', 
+              color: 'var(--text-main)', 
               padding: '0.6rem 1.5rem', 
               borderRadius: '4px',
               fontWeight: 'bold',
@@ -352,7 +352,7 @@ export function ScheduleView() {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(400px, 1fr) 300px', gap: '2rem' }}>
         
         {/* LEFT: Calendar/List */}
-        <div className="glass-panel" style={{ padding: '1.5rem', display:'flex', flexDirection:'column', gap:'1rem' }}>
+        <div className="card" style={{ padding: '1.5rem', display:'flex', flexDirection:'column', gap:'1rem' }}>
           <h3 style={{ borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.5rem', display:'flex', justifyContent:'space-between' }}>
             <span>今後の予定</span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>合計: {currentEvents.length}</span>
@@ -398,7 +398,7 @@ export function ScheduleView() {
                     {/* Date Box */}
                     <div style={{ 
                       background: 'var(--primary)', 
-                      color: 'white', 
+                      color: 'var(--text-main)', 
                       padding: '0.5rem', 
                       borderRadius: 'var(--radius-sm)',
                       textAlign: 'center',
@@ -429,10 +429,10 @@ export function ScheduleView() {
                                       autoFocus
                                       style={{ 
                                           flex: 1, 
-                                          background: 'rgba(0,0,0,0.3)', 
+                                          background: 'var(--bg-secondary)', 
                                           border: '1px solid var(--primary)', 
                                           borderRadius: '4px',
-                                          color: 'white',
+                                          color: 'var(--text-main)',
                                           padding: '0.5rem',
                                           fontSize: '0.9rem',
                                           resize: 'none',
@@ -454,7 +454,7 @@ export function ScheduleView() {
                                               fontSize: '0.8rem',
                                               background: 'transparent',
                                               border: '1px solid var(--glass-border)',
-                                              color: 'white',
+                                              color: 'var(--text-main)',
                                               borderRadius: '4px',
                                               cursor: 'pointer' 
                                           }}
@@ -480,7 +480,7 @@ export function ScheduleView() {
                               >
                                   <span style={{ fontSize: '1rem' }}>📝</span>
                                   {ev.memo ? (
-                                      <span style={{ color: 'white', whiteSpace: 'pre-wrap' }}>{ev.memo}</span>
+                                      <span style={{ color: 'var(--text-main)', whiteSpace: 'pre-wrap' }}>{ev.memo}</span>
                                   ) : (
                                       <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>メモを追加...</span>
                                   )}
@@ -498,7 +498,7 @@ export function ScheduleView() {
 
         {/* RIGHT: Tools (OCR) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-           <div className="glass-panel" style={{ padding: '1.5rem' }}>
+           <div className="card" style={{ padding: '1.5rem' }}>
              <h3 style={{ marginBottom: '1rem', fontWeight: 'bold' }}>画像の読み込み (OCR)</h3>
              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
                現在選択中の <strong>{currentTerm?.name}</strong> に追加されます。
@@ -518,9 +518,9 @@ export function ScheduleView() {
                    style={{ 
                      width: '100%', 
                      height: '150px', 
-                     background: 'rgba(0,0,0,0.3)', 
+                     background: 'var(--bg-secondary)', 
                      border: '1px solid var(--glass-border)', 
-                     color: 'white', 
+                     color: 'var(--text-main)', 
                      padding: '0.5rem',
                      marginBottom: '0.5rem' 
                    }} 
@@ -537,4 +537,5 @@ export function ScheduleView() {
     </div>
   );
 }
+
 
