@@ -4,14 +4,33 @@ export function LoginView({ onLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Validation: email + password
-        if (email === 'pta25pta@gmail.com' && password === 'pta2025pta44') {
-            onLogin();
-        } else {
-            setError('メールアドレスまたはパスワードが間違っています');
+        setIsLoading(true);
+        setError('');
+
+        try {
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                onLogin();
+            } else {
+                setError('メールアドレスまたはパスワードが間違っています');
+            }
+        } catch (err) {
+            setError('認証エラーが発生しました。もう一度お試しください。');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -59,6 +78,7 @@ export function LoginView({ onLogin }) {
                                 outline: 'none'
                             }}
                             autoFocus
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -81,6 +101,7 @@ export function LoginView({ onLogin }) {
                                 fontSize: '1rem',
                                 outline: 'none'
                             }}
+                            disabled={isLoading}
                         />
                     </div>
 
@@ -88,19 +109,20 @@ export function LoginView({ onLogin }) {
 
                     <button
                         type="submit"
+                        disabled={isLoading}
                         style={{
                             marginTop: '1rem',
                             padding: '0.75rem',
-                            background: 'var(--primary)',
+                            background: isLoading ? 'var(--text-muted)' : 'var(--primary)',
                             color: 'white',
                             border: 'none',
                             borderRadius: 'var(--radius-md)',
                             fontSize: '1rem',
                             fontWeight: '600',
-                            cursor: 'pointer'
+                            cursor: isLoading ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        ログイン
+                        {isLoading ? '認証中...' : 'ログイン'}
                     </button>
                 </form>
             </div>
