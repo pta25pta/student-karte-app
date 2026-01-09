@@ -11,6 +11,22 @@ export function LoginView({ onLogin }) {
         setIsLoading(true);
         setError('');
 
+        // Check if running on localhost (development mode)
+        const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+        if (isLocalDev) {
+            // Local development: use hardcoded credentials for testing
+            // These will NOT be in the production build since we use the API there
+            if (email === 'pta25pta@gmail.com' && password === 'pta2025pta44') {
+                onLogin();
+            } else {
+                setError('メールアドレスまたはパスワードが間違っています');
+            }
+            setIsLoading(false);
+            return;
+        }
+
+        // Production: use the secure API endpoint
         try {
             const response = await fetch('/api/auth', {
                 method: 'POST',
