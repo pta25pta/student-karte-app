@@ -196,6 +196,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
         {activeTab === 'profile' ? (
           <StudentProfileTab
             student={localStudent}
+            predictionStats={predictionStats}
             scenarioData={scenarioData}
             loadingStats={loadingStats}
             selectedMonth={selectedMonth}
@@ -367,10 +368,12 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     const saved = localStorage.getItem('scheduleData');
     if (saved) {
       const allTerms = JSON.parse(saved);
-      const termId = Number(student.term || 1);
-      const termData = allTerms.find(t => Number(t.id) === termId);
-      if (termData) {
-        return termData.events || [];
+      if (Array.isArray(allTerms)) {
+        const termId = Number(student.term || 1);
+        const termData = allTerms.find(t => Number(t.id) === termId);
+        if (termData) {
+          return termData.events || [];
+        }
       }
     }
     return [];
@@ -396,8 +399,18 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
 
   useEffect(() => {
     if (selectedEvent) {
-      const memoData = (student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' };
-      setLocalMemo(typeof memoData === 'string' ? { growth: memoData, challenges: '', instructor: '' } : memoData);
+      const memoData = (student.lessonMemos || {})[selectedEventId];
+      if (!memoData) {
+        setLocalMemo({ growth: '', challenges: '', instructor: '' });
+      } else if (typeof memoData === 'string') {
+        setLocalMemo({ growth: memoData, challenges: '', instructor: '' });
+      } else {
+        setLocalMemo({
+          growth: memoData.growth || '',
+          challenges: memoData.challenges || '',
+          instructor: memoData.instructor || ''
+        });
+      }
     } else {
       setLocalMemo({ growth: '', challenges: '', instructor: '' });
     }
@@ -473,7 +486,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>{selectedEvent.title}</h2>
               </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                📅 {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
+                📅 {selectedEvent.date} {(selectedEvent.description || '').replace(/(第\d+回)/, '')}
               </div>
             </div>
 
