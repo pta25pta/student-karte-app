@@ -1,8 +1,25 @@
 {
-  "version": 2,
-  "rewrites": [
-    { "source": "/api/students/:id", "destination": "/api/students" },
-    { "source": "/api/lessons/:studentId", "destination": "/api/lessons" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
+    "version": 2,
+    "rewrites": [
+        {
+            "source": "/api/students/:id/lesson-memos",
+            "destination": "/api/lesson-memos?id=:id"
+        },
+        {
+            "source": "/api/students/:id/memo-history",
+            "destination": "/api/memo-history?id=:id"
+        },
+        {
+            "source": "/api/students/:id",
+            "destination": "/api/students?id=:id"
+        },
+        {
+            "source": "/api/lessons/:studentId",
+            "destination": "/api/lessons?studentId=:studentId"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/"
+        }
+    ]
 }
