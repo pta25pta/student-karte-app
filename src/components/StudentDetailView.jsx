@@ -290,7 +290,7 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
           {/* Goals Panel - Right */}
           <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1.25rem', overflowY: 'auto', minWidth: 0 }}>
             <h3 style={{ fontSize: '1rem', marginBottom: '1rem', fontWeight: '700', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span>??</span> 目標・課題
+              <span>🎯</span> 目標・課題
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', flex: 1 }}>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -381,21 +381,21 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     return null;
   });
 
-  const handleMemoChange = (field, val) => {
-    if (!selectedEventId) return;
-    const currentMemos = student.lessonMemos || {};
-    const currentEventMemo = currentMemos[selectedEventId] || { growth: '', challenges: '', instructor: '' };
-    const updatedEventMemo = { ...currentEventMemo, [field]: val };
-    const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
-    onUpdate('lessonMemos', newMemos);
-  };
+  const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '' });
 
-  const selectedEvent = events.find(e => e.id === selectedEventId);
-  const currentMemoData = selectedEvent ? ((student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' }) : { growth: '', challenges: '', instructor: '' };
-  // For backwards compat: if old string memo exists, migrate to new format
-  const memoGrowth = typeof currentMemoData === 'string' ? currentMemoData : (currentMemoData.growth || '');
-  const memoChallenges = typeof currentMemoData === 'string' ? '' : (currentMemoData.challenges || '');
-  const memoInstructor = typeof currentMemoData === 'string' ? '' : (currentMemoData.instructor || '');
+  useEffect(() => {
+    if (selectedEvent) {
+      const memoData = (student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' };
+      setLocalMemo(typeof memoData === 'string' ? { growth: memoData, challenges: '', instructor: '' } : memoData);
+    } else {
+      setLocalMemo({ growth: '', challenges: '', instructor: '' });
+    }
+  }, [selectedEventId, student.lessonMemos]);
+
+  const handleLocalChange = (field, val) => {
+    setLocalMemo(prev => ({ ...prev, [field]: val }));
+    handleMemoChange(field, val);
+  };
 
   // Parse "第X回" logic
   const getLessonNo = (ev) => {
@@ -440,7 +440,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                     {lessonNo && <span style={{ background: isSelected ? 'var(--primary)' : '#4B5563', color: 'white', fontSize: '0.7rem', padding: '1px 5px', borderRadius: '4px' }}>{lessonNo}</span>}
                     {ev.title}
                   </div>
-                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}>??</div>}
+                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}>📝</div>}
                 </div>
               );
             })
@@ -462,7 +462,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>{selectedEvent.title}</h2>
               </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                ?? {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
+                📅 {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
               </div>
             </div>
 
@@ -503,13 +503,13 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
 // Helper function to get prediction display info
 function getPredictionDisplay(prediction) {
   if (prediction === true) {
-    return { text: '陽線', icon: '??', color: '#10B981' };
+    return { text: '陽線', icon: '🔴', color: '#10B981' };
   } else if (prediction === false) {
-    return { text: '陰線', icon: '??', color: '#3B82F6' };
+    return { text: '陰線', icon: '🔵', color: '#3B82F6' };
   } else if (prediction === 'skip') {
-    return { text: '見送', icon: '??', color: '#F59E0B' };
+    return { text: '見送', icon: '⏸️', color: '#F59E0B' };
   } else {
-    return { text: '未提出', icon: '?', color: '#9CA3AF' };
+    return { text: '未提出', icon: '⚪', color: '#9CA3AF' };
   }
 }
 
@@ -603,7 +603,7 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
       {/* Header with Month Selector */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <h3 style={{ fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-main)' }}>
-          <span>?? 予測履歴</span>
+          <span>📅 予測履歴</span>
         </h3>
 
         {/* Month Selector */}
@@ -684,7 +684,7 @@ function MonthlyHistoryCard({ stats, loading, selectedMonth, onMonthChange }) {
       {!stats ? (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ color: 'var(--text-muted)', textAlign: 'center' }}>
-            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>??</div>
+            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>📊</div>
             <div>左の「同期」ボタンを押して</div>
             <div>データを取得してください</div>
           </div>

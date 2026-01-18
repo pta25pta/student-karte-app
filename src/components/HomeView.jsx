@@ -172,7 +172,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
           <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
             <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-input, #F9FAFB)', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2 style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                ?? 要注意生徒
+                🚨 要注意生徒
                 {dashboardData.alerts.length > 0 && (
                   <span style={{ background: '#EF4444', color: 'white', fontSize: '0.7rem', padding: '1px 6px', borderRadius: '10px' }}>{dashboardData.alerts.length}</span>
                 )}
@@ -226,7 +226,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
                 </div>
               ) : (
                 <div style={{ padding: '2rem', textAlign: 'center', color: '#10B981', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>??</span>
+                  <span style={{ fontSize: '1.5rem' }}>🎉</span>
                   <span>アラートはありません。全員順調です！</span>
                 </div>
               )}
@@ -236,7 +236,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
           {/* RIGHT: Compact Schedule */}
           <div className="card" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
             <div style={{ padding: '0.75rem 1rem', background: 'var(--bg-input, #F9FAFB)', borderBottom: '1px solid var(--border-color)' }}>
-              <h2 style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>?? 今月の予定</h2>
+              <h2 style={{ fontSize: '0.95rem', fontWeight: 'bold', color: 'var(--text-main)', margin: 0 }}>📅 今月の予定</h2>
             </div>
             <div style={{ flex: 1, padding: '0.5rem' }}>
               {upcomingEvents.length > 0 ? (
@@ -263,7 +263,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
                         <div style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 'bold' }}>
                           {new Date(evt.start || evt.date).toLocaleDateString()}
                         </div>
-                        {evt.memo && <span style={{ fontSize: '0.8rem' }}>??</span>}
+                        {evt.memo && <span style={{ fontSize: '0.8rem' }}>📝</span>}
                       </div>
                       <div style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '0.2rem' }}>{evt.title}</div>
                       {(evt.description || evt.type) && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{evt.description || evt.type}</div>}
@@ -330,7 +330,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
                 className="btn"
                 style={{ background: 'var(--bg-card, white)', border: '1px solid var(--border-color)', color: 'var(--text-main)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
               >
-                <span>??</span> スケジュール管理へ
+                <span>📅</span> スケジュール管理へ
               </button>
             </div>
           </div>
@@ -339,9 +339,9 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
 
         {/* BOTTOM: Compact Quick Actions */}
         <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <CompactButton icon="??" label="生徒リスト" onClick={() => onNavigate && onNavigate('student_list')} />
-          <CompactButton icon="??" label="システム設定" onClick={() => onNavigate && onNavigate('settings')} />
-          <CompactButton icon="??" label="データ同期" onClick={() => document.getElementById('btn-sync-all')?.click()} />
+          <CompactButton icon="📝" label="生徒リスト" onClick={() => onNavigate && onNavigate('student_list')} />
+          <CompactButton icon="⚙️" label="システム設定" onClick={() => onNavigate && onNavigate('settings')} />
+          <CompactButton icon="🔄" label="データ同期" onClick={() => document.getElementById('btn-sync-all')?.click()} />
         </div>
 
       </div>
