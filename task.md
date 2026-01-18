@@ -1,0 +1,39 @@
+# データベース学習タスク
+
+- [/] データベース学習ガイドの作成
+  - [x] データベースの基礎概念の説明
+  - [x] 生徒カルテアプリに適したDB選択肢の比較
+  - [x] 実装プランの作成
+- [ ] 自作データベースの実装
+  - [x] サーバー環境の構築 (Node.js + Express)
+  - [x] DBロジックの実装 (JSONファイル読み書き)
+  - [x] サーバー環境の構築 (Node.js + Express)
+  - [x] DBロジックの実装 (JSONファイル読み書き)
+  - [x] APIエンドポイントの作成
+  - [x] サーバー環境の構築 (Node.js + Express)
+  - [x] DBロジックの実装 (JSONファイル読み書き)
+  - [x] APIエンドポイントの作成
+  - [x] フロントエンドとの連携
+  - [x] フロントエンドとの連携
+  - [x] 動作確認 (データの永続化確認)
+- [x] オンラインデプロイ準備
+  - [x] サーバー設定の環境変数対応 (PORT, DATA_DIR)
+  - [x] フロントエンド接続先の環境変数対応
+- [/] Vercel + Google Sheets 移行プロジェクト
+  - [x] 計画策定 (implementation_plan.md)
+  - [x] GCP設定ガイド作成 (gcp_setup_guide.md)
+  - [x] ユーザーGCP設定待ち
+  - [x] バックエンド: Google Sheets連携実装
+    - [x] 依存パッケージインストール
+    - [x] DBのアダプター作成
+    - [x] サーバーエントリーポイント修正
+  - [x] フロントエンド: API変数確認
+  - [ ] Vercelデプロイ (ユーザー作業)
+- [ ] UI改善
+  - [x] ScheduleViewのスタイル調整
+  - [x] ヘッダーメニューの調整 (「生徒一覧」ボタン設置)
+- [/] Save Button & Logic Refinement
+  - [x] Implement Save Button in StudentLessonTab
+  - [x] Refactor local state handling
+  - [x] Suppress auto-notifications
+  - [ ] Verify on Vercel deployment
