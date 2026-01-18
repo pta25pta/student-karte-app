@@ -300,7 +300,7 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
                 </div>
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ fontWeight: '600', color: '#EF4444', marginBottom: '0.5rem', fontSize: '0.9rem' }}>?? 自身の課題</div>
+                <div style={{ fontWeight: '600', color: '#EF4444', marginBottom: '0.5rem', fontSize: '0.9rem' }}>🔥 自身の課題</div>
                 <div style={{ background: 'var(--bg-input, #F9FAFB)', padding: '0.75rem', borderRadius: '6px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap', fontSize: '0.9rem', lineHeight: '1.6', flex: 1, overflowY: 'auto' }}>
                   {student.issues || '未記入'}
                 </div>
@@ -770,7 +770,7 @@ function PredictionStatsCard({ stats, loading }) {
   return (
     <div className="card" style={{ padding: '1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h3 style={{ fontSize: '0.95rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>?? 予測成績</h3>
+        <h3 style={{ fontSize: '0.95rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>📊 予測成績</h3>
       </div>
 
       {loading ? (
@@ -946,9 +946,7 @@ function MemoSection({ history, onAdd, onDelete }) {
                 <div style={{ whiteSpace: 'pre-wrap', color: 'var(--text-main)' }}>{memo.content}</div>
               </div>
               <button
-                onClick={() => onDelete(memo.id)}
-                style={{ background: 'transparent', border: 'none', color: '#EF4444', opacity: 0.6, cursor: 'pointer', fontSize: '0.75rem' }}
-              >??</button>
+              >🗑️</button>
             </div>
           );
         })}
@@ -1158,13 +1156,13 @@ function GoalsPanel({ student }) {
       <h3 style={{ fontSize: '0.9rem', marginBottom: '0.75rem', fontWeight: '600', color: 'var(--text-main)', position: 'sticky', top: 0, background: 'var(--bg-card, white)' }}>目標・課題</h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.85rem' }}>
         <div>
-          <div style={{ fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', fontSize: '0.95rem' }}>?? スクールで学びたいこと</div>
+          <div style={{ fontWeight: 'bold', color: 'var(--primary)', marginBottom: '0.4rem', fontSize: '0.95rem' }}>🎓 スクールで学びたいこと</div>
           <div style={{ background: 'var(--bg-input, #F9FAFB)', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap', fontSize: '0.9rem', maxHeight: '100px', overflowY: 'auto', lineHeight: '1.5' }}>
             {student.goals || '未記入'}
           </div>
         </div>
         <div>
-          <div style={{ fontWeight: 'bold', color: '#EF4444', marginBottom: '0.4rem', fontSize: '0.95rem' }}>?? 自身の課題</div>
+          <div style={{ fontWeight: 'bold', color: '#EF4444', marginBottom: '0.4rem', fontSize: '0.95rem' }}>🔥 自身の課題</div>
           <div style={{ background: 'var(--bg-input, #F9FAFB)', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--border-color)', color: 'var(--text-main)', whiteSpace: 'pre-wrap', fontSize: '0.9rem', maxHeight: '100px', overflowY: 'auto', lineHeight: '1.5' }}>
             {student.issues || '未記入'}
           </div>
@@ -1209,11 +1207,11 @@ function CredentialsCard({ student, onUpdate }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
         <h3 style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>FXTF ログイン</h3>
         {!isEditing ? (
-          <button onClick={() => setIsEditing(true)} style={{ fontSize: '0.8rem', cursor: 'pointer', border: 'none', background: 'transparent' }}>??</button>
+          <button onClick={() => setIsEditing(true)} style={{ fontSize: '0.8rem', cursor: 'pointer', border: 'none', background: 'transparent' }}>✏️</button>
         ) : (
           <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button onClick={handleSave} style={{ fontSize: '0.8rem', cursor: 'pointer', background: '#10B981', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 6px' }}>?</button>
-            <button onClick={() => setIsEditing(false)} style={{ fontSize: '0.8rem', cursor: 'pointer', background: 'var(--bg-input, #F3F4F6)', color: 'black', border: 'none', borderRadius: '4px', padding: '2px 6px' }}>?</button>
+            <button onClick={handleSave} style={{ fontSize: '0.8rem', cursor: 'pointer', background: '#10B981', color: 'white', border: 'none', borderRadius: '4px', padding: '2px 6px' }}>✔️</button>
+            <button onClick={() => setIsEditing(false)} style={{ fontSize: '0.8rem', cursor: 'pointer', background: 'var(--bg-input, #F3F4F6)', color: 'black', border: 'none', borderRadius: '4px', padding: '2px 6px' }}>❌</button>
           </div>
         )}
       </div>
@@ -1232,7 +1230,7 @@ function CredentialsCard({ student, onUpdate }) {
                     onChange={(e) => handleChange(acc.id, 'name', e.target.value)}
                     style={{ padding: '0.2rem', border: '1px solid #D1D5DB', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold', width: '100px' }}
                   />
-                  <button onClick={() => handleDelete(acc.id)} style={{ color: 'red', border: 'none', background: 'transparent', cursor: 'pointer' }}>??</button>
+                  <button onClick={() => handleDelete(acc.id)} style={{ color: 'red', border: 'none', background: 'transparent', cursor: 'pointer' }}>🗑️</button>
                 </div>
                 <input
                   placeholder="ログインID"
@@ -1273,7 +1271,7 @@ function AccountDisplay({ acc, index }) {
         onClick={() => setShow(!show)}
         style={{ fontFamily: 'monospace', color: 'var(--text-main)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem' }}
       >
-        <span>PW: {show ? acc.password : '??????'}</span>
+        <span>PW: {show ? acc.password : '••••••'}</span>
         <span style={{ fontSize: '0.65rem', color: 'var(--primary)' }}>{show ? '隠す' : '表示'}</span>
       </div>
     </div>
@@ -1309,97 +1307,98 @@ function OutputUrlCard({ student, onUpdate }) {
               padding: '0.2rem'
             }}
             title="編集"
+            ✏️
+      </button>
+        )}
+    </div>
+
+      {
+    isEditing ? (
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="URLを入力"
+          style={{
+            flex: 1,
+            padding: '0.3rem',
+            fontSize: '0.85rem',
+            borderRadius: '4px',
+            border: '1px solid var(--border-color)'
+          }}
+        />
+        <button
+          onClick={handleSave}
+          title="保存"
+          style={{
+            background: '#10B981',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '0.3rem 0.6rem',
+            cursor: 'pointer'
+          }}
+        >
+          ?
+        </button>
+        <button
+          onClick={() => {
+            setIsEditing(false);
+            setUrl(student.outputUrl || '');
+          }}
+          title="キャンセル"
+          style={{
+            background: 'var(--bg-input, #F3F4F6)',
+            color: 'var(--text-muted)',
+            border: 'none',
+            borderRadius: '4px',
+            padding: '0.3rem 0.6rem',
+            cursor: 'pointer'
+          }}
+        >
+          ?
+        </button>
+      </div>
+    ) : (
+      <div>
+        {student.outputUrl ? (
+          <a
+            href={student.outputUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: '0.85rem',
+              color: '#3B82F6',
+              textDecoration: 'none',
+              wordBreak: 'break-all',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.2rem'
+            }}
           >
-            ??
-          </button>
+            🔗 <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
+          </a>
+        ) : (
+          <div
+            onClick={() => setIsEditing(true)}
+            style={{
+              fontSize: '0.8rem',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              border: '1px dashed var(--border-color)',
+              padding: '0.5rem',
+              borderRadius: '4px',
+              textAlign: 'center'
+            }}
+          >
+            + URL追加
+          </div>
         )}
       </div>
-
-      {isEditing ? (
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="URLを入力"
-            style={{
-              flex: 1,
-              padding: '0.3rem',
-              fontSize: '0.85rem',
-              borderRadius: '4px',
-              border: '1px solid var(--border-color)'
-            }}
-          />
-          <button
-            onClick={handleSave}
-            title="保存"
-            style={{
-              background: '#10B981',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '0.3rem 0.6rem',
-              cursor: 'pointer'
-            }}
-          >
-            ?
-          </button>
-          <button
-            onClick={() => {
-              setIsEditing(false);
-              setUrl(student.outputUrl || '');
-            }}
-            title="キャンセル"
-            style={{
-              background: 'var(--bg-input, #F3F4F6)',
-              color: 'var(--text-muted)',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '0.3rem 0.6rem',
-              cursor: 'pointer'
-            }}
-          >
-            ?
-          </button>
-        </div>
-      ) : (
-        <div>
-          {student.outputUrl ? (
-            <a
-              href={student.outputUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: '0.85rem',
-                color: '#3B82F6',
-                textDecoration: 'none',
-                wordBreak: 'break-all',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.2rem'
-              }}
-            >
-              ?? <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
-            </a>
-          ) : (
-            <div
-              onClick={() => setIsEditing(true)}
-              style={{
-                fontSize: '0.8rem',
-                color: 'var(--text-muted)',
-                cursor: 'pointer',
-                border: '1px dashed var(--border-color)',
-                padding: '0.5rem',
-                borderRadius: '4px',
-                textAlign: 'center'
-              }}
-            >
-              + URL追加
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+    )
+  }
+    </div >
   );
 }
 
