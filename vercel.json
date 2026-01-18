@@ -2,6 +2,7 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/students/:id", "destination": "/api/students" },
+    { "source": "/api/lessons/:studentId", "destination": "/api/lessons" },
     { "source": "/(.*)", "destination": "/" }
   ]
 }
