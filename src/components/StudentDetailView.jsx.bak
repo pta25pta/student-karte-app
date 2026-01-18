@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StudentService } from '../services/StudentService';
 import { ExternalDataService } from '../services/ExternalDataService';
 import { ScenarioPanel } from './ScenarioPanel';
@@ -9,7 +9,6 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
   const [scenarioData, setScenarioData] = useState([]);
   const [loadingStats, setLoadingStats] = useState(false);
   const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'lessons'
-  const [loadingDetails, setLoadingDetails] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
     return { year: now.getFullYear(), month: now.getMonth() + 1 };
@@ -19,32 +18,6 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
     setLocalStudent(student);
     setPredictionStats(initialStats || null);
   }, [student, initialStats]);
-
-  // Fetch extra details if missing (Corrected)
-  useEffect(() => {
-    const shouldFetch = !student.lessonMemos || !student.memoHistory;
-    if (shouldFetch && student.id) {
-        const fetchDetails = async () => {
-            setLoadingDetails(true);
-            try {
-                const [memos, history] = await Promise.all([
-                    StudentService.getLessonMemos(student.id),
-                    StudentService.getMemoHistory(student.id)
-                ]);
-                setLocalStudent(prev => ({
-                    ...prev,
-                    lessonMemos: memos || {},
-                    memoHistory: history || []
-                }));
-            } catch (err) {
-                console.error('Failed to fetch student details', err);
-            } finally {
-                setLoadingDetails(false);
-            }
-        };
-        fetchDetails();
-    }
-  }, [student.id]);
 
       const handleUpdate = async (field, value, silent = false) => {
     const updated = { ...localStudent, [field]: value };
@@ -1390,7 +1363,6 @@ function OutputUrlCard({ student, onUpdate }) {
     </div>
   );
 }
-
 
 
 
