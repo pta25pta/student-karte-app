@@ -19,7 +19,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
     setPredictionStats(initialStats || null);
   }, [student, initialStats]);
 
-      const handleUpdate = async (field, value) => {
+      const handleUpdate = async (field, value, silent = false) => {
     const updated = { ...localStudent, [field]: value };
     setLocalStudent(updated);
     // Optimistic update
@@ -28,7 +28,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
     // API Call
     try {
       await StudentService.updateStudent(updated);
-      if (onNotify) onNotify('保存しました', 'success');
+      if (!silent && onNotify) onNotify('保存しました', 'success');
     } catch (err) {
       console.error('Failed to save update', err);
       if (onNotify) onNotify('保存に失敗しました', 'error');
@@ -174,6 +174,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
             selectedMonth={selectedMonth}
             onMonthChange={setSelectedMonth}
             onUpdate={handleUpdate}
+            onNotify={onNotify}
           />
         ) : (
           <StudentLessonTab
