@@ -180,6 +180,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
           <StudentLessonTab
             student={localStudent}
             onUpdate={handleUpdate}
+            onNotify={onNotify}
           />
         )}
       </div>
@@ -303,9 +304,8 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
   );
 }
 
-// ----------------------------------------------------------------------
-// TAB 2: LESSONS (New Interface)
-// ----------------------------------------------------------------------
+
+
 function LessonMemoField({ label, value, onChange, placeholder }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -337,14 +337,17 @@ function LessonMemoField({ label, value, onChange, placeholder }) {
 
 function StudentLessonTab({ student, onUpdate, onNotify }) {
   const [events] = useState(() => {
-    const saved = localStorage.getItem('scheduleData');
-    if (saved) {
-      const allTerms = JSON.parse(saved);
-      const termData = allTerms.find(t => t.id === (student.term || 1));
-      if (termData) {
-        return termData.events || [];
+    try {
+      const saved = localStorage.getItem('scheduleData');
+      if (saved) {
+        const allTerms = JSON.parse(saved);
+        if (!Array.isArray(allTerms)) return [];
+        const termData = allTerms.find(t => t.id === (student.term || 1));
+        if (termData) {
+          return termData.events || [];
+        }
       }
-    }
+    } catch (e) { console.error(e); }
     return [];
   });
 
@@ -353,23 +356,37 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     return null;
   });
 
-  const handleMemoChange = (field, val) => {
+  const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '' });
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useEffect(() => {
+    if (selectedEventId) {
+      const currentMemoData = (student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' };
+      setLocalMemo({
+        growth: typeof currentMemoData === 'string' ? currentMemoData : (currentMemoData.growth || ''),
+        challenges: typeof currentMemoData === 'string' ? '' : (currentMemoData.challenges || ''),
+        instructor: typeof currentMemoData === 'string' ? '' : (currentMemoData.instructor || ''),
+      });
+      setHasUnsavedChanges(false);
+    }
+  }, [selectedEventId, student.lessonMemos]);
+
+  const handleLocalChange = (field, val) => {
+    setLocalMemo(prev => ({ ...prev, [field]: val }));
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSave = () => {
     if (!selectedEventId) return;
     const currentMemos = student.lessonMemos || {};
-    const currentEventMemo = currentMemos[selectedEventId] || { growth: '', challenges: '', instructor: '' };
-    const updatedEventMemo = { ...currentEventMemo, [field]: val };
-    const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
-    onUpdate('lessonMemos', newMemos);
+    const newMemos = { ...currentMemos, [selectedEventId]: localMemo };
+    onUpdate('lessonMemos', newMemos, true); // Silent update
+    setHasUnsavedChanges(false);
+    if (onNotify) onNotify('保存しました', 'success');
   };
 
   const selectedEvent = events.find(e => e.id === selectedEventId);
-  const currentMemoData = selectedEvent ? ((student.lessonMemos || {})[selectedEventId] || { growth: '', challenges: '', instructor: '' }) : { growth: '', challenges: '', instructor: '' };
-  // For backwards compat: if old string memo exists, migrate to new format
-  const memoGrowth = typeof currentMemoData === 'string' ? currentMemoData : (currentMemoData.growth || '');
-  const memoChallenges = typeof currentMemoData === 'string' ? '' : (currentMemoData.challenges || '');
-  const memoInstructor = typeof currentMemoData === 'string' ? '' : (currentMemoData.instructor || '');
 
-  // Parse "第X回" logic
   const getLessonNo = (ev) => {
     const match = ev.description?.match(/(第\d+回)/);
     return match ? match[1] : null;
@@ -377,7 +394,6 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
 
   return (
     <div style={{ display: 'flex', height: '100%', gap: '1rem' }}>
-      {/* Left: List */}
       <div className="card" style={{ width: '320px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', fontWeight: 'bold' }}>授業一覧</div>
         <div style={{ flex: 1, overflowY: 'auto', padding: '0.5rem' }}>
@@ -412,7 +428,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                     {lessonNo && <span style={{ background: isSelected ? 'var(--primary)' : '#4B5563', color: 'white', fontSize: '0.7rem', padding: '1px 5px', borderRadius: '4px' }}>{lessonNo}</span>}
                     {ev.title}
                   </div>
-                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}>📝</div>}
+                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}></div>}
                 </div>
               );
             })
@@ -420,7 +436,6 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
         </div>
       </div>
 
-      {/* Right: Editor */}
       <div className="card" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         {selectedEvent ? (
           <>
@@ -434,7 +449,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>{selectedEvent.title}</h2>
               </div>
               <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                📅 {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
+                 {selectedEvent.date} {selectedEvent.description.replace(/(第\d+回)/, '')}
               </div>
             </div>
 
@@ -443,20 +458,39 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 label="生徒本人の成長"
                 value={localMemo.growth}
                 onChange={(val) => handleLocalChange('growth', val)}
-                placeholder="生徒の成長・良かった点を記入..."
+                placeholder="生徒の成長良かった点を記入..."
               />
               <LessonMemoField
                 label="課題"
                 value={localMemo.challenges}
                 onChange={(val) => handleLocalChange('challenges', val)}
-                placeholder="今後の課題・改善点を記入..."
+                placeholder="今後の課題改善点を記入..."
               />
               <LessonMemoField
                 label="講師メモ"
                 value={localMemo.instructor}
                 onChange={(val) => handleLocalChange('instructor', val)}
-                placeholder="講師としてのメモ・覚え書きを記入..."
+                placeholder="講師としてのメモ覚え書きを記入..."
               />
+
+              <button
+                onClick={handleSave}
+                disabled={!hasUnsavedChanges}
+                style={{
+                  marginTop: '0.5rem',
+                  padding: '0.75rem 1.5rem',
+                  background: hasUnsavedChanges ? 'var(--primary)' : '#ccc',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                  cursor: hasUnsavedChanges ? 'pointer' : 'not-allowed',
+                  alignSelf: 'flex-end',
+                  transition: 'background 0.2s'
+                }}
+              >
+                {hasUnsavedChanges ? ' 表示内容を保存' : ' 保存済み'}
+              </button>
             </div>
           </>
         ) : (
@@ -469,8 +503,10 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
   );
 }
 
+
+
 // ----------------------------------------------------------------------
-// HELPER COMPONENTS (Unchanged mostly)
+// HELPER COMPONENTS
 // ----------------------------------------------------------------------
 // Helper function to get prediction display info
 function getPredictionDisplay(prediction) {
