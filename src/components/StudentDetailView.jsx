@@ -946,6 +946,8 @@ function MemoSection({ history, onAdd, onDelete }) {
                 <div style={{ whiteSpace: 'pre-wrap', color: 'var(--text-main)' }}>{memo.content}</div>
               </div>
               <button
+                onClick={() => onDelete(memo.id)}
+                style={{ background: 'transparent', border: 'none', color: '#EF4444', opacity: 0.6, cursor: 'pointer', fontSize: '0.75rem' }}
               >🗑️</button>
             </div>
           );
@@ -992,7 +994,7 @@ function MemoSection({ history, onAdd, onDelete }) {
         />
         <button onClick={handleSubmit} className="btn-primary" style={{ padding: '0.4rem' }}>追加</button>
       </div>
-    </div>
+    </div >
   );
 }
 
@@ -1307,97 +1309,98 @@ function OutputUrlCard({ student, onUpdate }) {
               padding: '0.2rem'
             }}
             title="編集"
+          >
             ✏️
-      </button>
+          </button>
         )}
-    </div>
+      </div>
 
       {
-    isEditing ? (
-      <div style={{ display: 'flex', gap: '0.5rem' }}>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="URLを入力"
-          style={{
-            flex: 1,
-            padding: '0.3rem',
-            fontSize: '0.85rem',
-            borderRadius: '4px',
-            border: '1px solid var(--border-color)'
-          }}
-        />
-        <button
-          onClick={handleSave}
-          title="保存"
-          style={{
-            background: '#10B981',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            padding: '0.3rem 0.6rem',
-            cursor: 'pointer'
-          }}
-        >
-          ?
-        </button>
-        <button
-          onClick={() => {
-            setIsEditing(false);
-            setUrl(student.outputUrl || '');
-          }}
-          title="キャンセル"
-          style={{
-            background: 'var(--bg-input, #F3F4F6)',
-            color: 'var(--text-muted)',
-            border: 'none',
-            borderRadius: '4px',
-            padding: '0.3rem 0.6rem',
-            cursor: 'pointer'
-          }}
-        >
-          ?
-        </button>
-      </div>
-    ) : (
-      <div>
-        {student.outputUrl ? (
-          <a
-            href={student.outputUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontSize: '0.85rem',
-              color: '#3B82F6',
-              textDecoration: 'none',
-              wordBreak: 'break-all',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.2rem'
-            }}
-          >
-            🔗 <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
-          </a>
-        ) : (
-          <div
-            onClick={() => setIsEditing(true)}
-            style={{
-              fontSize: '0.8rem',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-              border: '1px dashed var(--border-color)',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              textAlign: 'center'
-            }}
-          >
-            + URL追加
+        isEditing ? (
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="URLを入力"
+              style={{
+                flex: 1,
+                padding: '0.3rem',
+                fontSize: '0.85rem',
+                borderRadius: '4px',
+                border: '1px solid var(--border-color)'
+              }}
+            />
+            <button
+              onClick={handleSave}
+              title="保存"
+              style={{
+                background: '#10B981',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '0.3rem 0.6rem',
+                cursor: 'pointer'
+              }}
+            >
+              ?
+            </button>
+            <button
+              onClick={() => {
+                setIsEditing(false);
+                setUrl(student.outputUrl || '');
+              }}
+              title="キャンセル"
+              style={{
+                background: 'var(--bg-input, #F3F4F6)',
+                color: 'var(--text-muted)',
+                border: 'none',
+                borderRadius: '4px',
+                padding: '0.3rem 0.6rem',
+                cursor: 'pointer'
+              }}
+            >
+              ?
+            </button>
           </div>
-        )}
-      </div>
-    )
-  }
+        ) : (
+          <div>
+            {student.outputUrl ? (
+              <a
+                href={student.outputUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '0.85rem',
+                  color: '#3B82F6',
+                  textDecoration: 'none',
+                  wordBreak: 'break-all',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.2rem'
+                }}
+              >
+                🔗 <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
+              </a>
+            ) : (
+              <div
+                onClick={() => setIsEditing(true)}
+                style={{
+                  fontSize: '0.8rem',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  border: '1px dashed var(--border-color)',
+                  padding: '0.5rem',
+                  borderRadius: '4px',
+                  textAlign: 'center'
+                }}
+              >
+                + URL追加
+              </div>
+            )}
+          </div>
+        )
+      }
     </div >
   );
 }
