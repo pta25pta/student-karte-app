@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Security
+server/service-account.json
+.env
+server/database.json

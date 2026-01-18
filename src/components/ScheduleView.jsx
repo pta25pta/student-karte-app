@@ -240,9 +240,9 @@ export function ScheduleView() {
                     style={{
                         padding: '0.5rem 1rem',
                         borderRadius: '20px',
-                        border: selectedTermId === term.id ? '1px solid var(--primary)' : '1px solid transparent',
-                        background: selectedTermId === term.id ? 'var(--primary)' : 'var(--bg-secondary)',
-                        color: 'var(--text-main)',
+                        border: selectedTermId === term.id ? '1px solid #3B82F6' : '1px solid transparent',
+                        background: selectedTermId === term.id ? '#EFF6FF' : 'var(--bg-secondary)',
+                        color: selectedTermId === term.id ? '#3B82F6' : 'var(--text-main)',
                         fontWeight: selectedTermId === term.id ? 'bold' : 'normal',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
@@ -276,16 +276,21 @@ export function ScheduleView() {
           <button 
              onClick={handleAddTerm}
              style={{ 
-                 padding: '0.5rem 0.8rem', 
-                 borderRadius: '50%', 
-                 background: 'var(--glass-border)', 
+                 padding: '0.5rem 1rem', 
+                 borderRadius: '20px', 
+                 background: 'var(--primary)', 
                  border: 'none', 
-                 color: 'var(--text-main)',
-                 cursor: 'pointer' 
+                 color: 'white',
+                 cursor: 'pointer',
+                 fontWeight: 'bold',
+                 fontSize: '0.9rem',
+                 display: 'flex',
+                 alignItems: 'center',
+                 gap: '0.3rem'
              }}
              title="期の追加"
           >
-             +
+             <span style={{ fontSize: '1.1rem' }}>+</span> 期を追加
           </button>
       </div>
 
@@ -309,7 +314,7 @@ export function ScheduleView() {
               type="date" 
               value={newDate} 
               onChange={(e) => setNewDate(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'var(--bg-card, white)', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <div style={{ flex: 2, minWidth: '200px' }}>
@@ -319,7 +324,7 @@ export function ScheduleView() {
               placeholder="イベント名"
               value={newTitle} 
               onChange={(e) => setNewTitle(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'var(--bg-card, white)', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <div style={{ flex: 3, minWidth: '200px' }}>
@@ -329,7 +334,7 @@ export function ScheduleView() {
               placeholder="10:00~12:00 etc"
               value={newDesc} 
               onChange={(e) => setNewDesc(e.target.value)}
-              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'white', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
+              style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', background: 'var(--bg-card, white)', border: '1px solid var(--glass-border)', color: 'var(--text-main)' }}
             />
           </div>
           <button 
@@ -349,7 +354,7 @@ export function ScheduleView() {
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(400px, 1fr) 300px', gap: '2rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         
         {/* LEFT: Calendar/List */}
         <div className="card" style={{ padding: '1.5rem', display:'flex', flexDirection:'column', gap:'1rem' }}>
@@ -495,47 +500,7 @@ export function ScheduleView() {
             })
           )}
         </div>
-
-        {/* RIGHT: Tools (OCR) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-           <div className="card" style={{ padding: '1.5rem' }}>
-             <h3 style={{ marginBottom: '1rem', fontWeight: 'bold' }}>画像の読み込み (OCR)</h3>
-             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-               現在選択中の <strong>{currentTerm?.name}</strong> に追加されます。
-               スケジュールの画像をアップロードすると、文字認識(OCR)で内容を読み取ります。
-             </p>
-             
-             <input type="file" accept="image/*" onChange={handleImageUpload} style={{ marginBottom: '1rem', width: '100%' }} />
-             
-             {loading && <div style={{ color: 'var(--primary-l)' }}>スキャン中... (時間がかかります)</div>}
-             
-             {ocrText && (
-               <div style={{ animation: 'fadeIn 0.5s' }}>
-                 <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>読み取り結果 (編集可能):</label>
-                 <textarea 
-                   value={ocrText} 
-                   onChange={(e) => setOcrText(e.target.value)}
-                   style={{ 
-                     width: '100%', 
-                     height: '150px', 
-                     background: 'var(--bg-secondary)', 
-                     border: '1px solid var(--glass-border)', 
-                     color: 'var(--text-main)', 
-                     padding: '0.5rem',
-                     marginBottom: '0.5rem' 
-                   }} 
-                 />
-                 <button className="btn-primary w-full" onClick={handleParseAndAdd}>
-                   {currentTerm?.name} に追加する
-                 </button>
-               </div>
-             )}
-           </div>
-        </div>
-
       </div>
     </div>
   );
 }
-
-

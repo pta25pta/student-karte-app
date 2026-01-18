@@ -5,20 +5,25 @@ import { HomeView } from './components/HomeView';
 import { ScheduleView } from './components/ScheduleView';
 import { SettingsView } from './components/SettingsView';
 import { LoginView } from './components/LoginView';
-import { mockStudents } from './data/mockData';
+import { StudentService } from './services/StudentService';
 import { ExternalDataService } from './services/ExternalDataService';
 
 function App() {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [currentView, setCurrentView] = useState('home');
+    const [students, setStudents] = useState([]);
 
-    // Auth State
+    useEffect(() => {
+        StudentService.getAllStudents().then(data => {
+            setStudents(data);
+        });
+    }, []);
+
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return localStorage.getItem('isAuthenticated') === 'true';
     });
     
-    // Centralized student stats storage
     const [studentStats, setStudentStats] = useState(() => {
         try {
             const saved = localStorage.getItem('studentStats');
@@ -40,7 +45,6 @@ function App() {
         }
     });
 
-    // Toast Notification State
     const [toasts, setToasts] = useState([]);
 
     const addToast = useCallback((message, type = 'info') => {
@@ -51,7 +55,6 @@ function App() {
         }, 3000);
     }, []);
 
-    // Auth Handlers
     const handleLogin = () => {
         setIsAuthenticated(true);
         localStorage.setItem('isAuthenticated', 'true');
@@ -65,20 +68,18 @@ function App() {
         setIsSidebarOpen(false);
     };
 
-    // Bulk sync all students
     const handleBulkSync = useCallback(async () => {
         if (isBulkSyncing) return;
 
         setIsBulkSyncing(true);
-        setSyncProgress({ current: 0, total: mockStudents.length });
+        setSyncProgress({ current: 0, total: students.length });
         addToast('全員同期を開始しました', 'info');
 
         const newStats = {};
         const BATCH_SIZE = 3;
 
-        // Fetch in batches to improve speed while respecting API limits
-        for (let i = 0; i < mockStudents.length; i += BATCH_SIZE) {
-            const batch = mockStudents.slice(i, i + BATCH_SIZE);
+        for (let i = 0; i < students.length; i += BATCH_SIZE) {
+            const batch = students.slice(i, i + BATCH_SIZE);
 
             await Promise.all(batch.map(async (student) => {
                 try {
@@ -91,8 +92,8 @@ function App() {
             }));
 
             setSyncProgress({
-                current: Math.min(i + BATCH_SIZE, mockStudents.length),
-                total: mockStudents.length
+                current: Math.min(i + BATCH_SIZE, students.length),
+                total: students.length
             });
         }
 
@@ -100,21 +101,19 @@ function App() {
         setLastSynced(new Date());
         setIsBulkSyncing(false);
         addToast('全員同期が完了しました', 'success');
-    }, [isBulkSyncing, addToast]);
+    }, [isBulkSyncing, addToast, students]);
 
-    // Load theme on mount - Force 'light' for Modern Clean
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
     }, []);
 
-    // Auto-Sync on launch
     useEffect(() => {
         const autoSync = localStorage.getItem('autoSync') === 'true';
-        if (autoSync && isAuthenticated) {
+        if (autoSync && isAuthenticated && students.length > 0) {
             setTimeout(() => handleBulkSync(), 0);
         }
-    }, [handleBulkSync, isAuthenticated]);
+    }, [handleBulkSync, isAuthenticated, students.length]);
 
     const handleSelect = (student) => {
         setSelectedStudent(student);
@@ -149,7 +148,6 @@ function App() {
     return (
         <div className="w-full h-full" style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: 'var(--bg-main)' }}>
 
-            {/* HEADER Nav - Modern Clean: White with border */}
             <header style={{
                 height: '60px',
                 borderBottom: '1px solid var(--border-color)',
@@ -161,8 +159,27 @@ function App() {
                 justifyContent: 'space-between'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <button onClick={toggleSidebar} style={{ color: 'var(--text-main)', fontSize: '1.2rem', padding: '0.5rem' }}>
-                        ☰
+                                        <button 
+                        onClick={toggleSidebar} 
+                        style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '0.4rem',
+                            padding: '0.4rem 0.8rem',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '8px',
+                            background: 'var(--bg-secondary)',
+                            color: 'var(--text-main)',
+                            cursor: 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            transition: 'all 0.2s',
+                            marginRight: '0.5rem'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--bg-hover)'}
+                        onMouseLeave={(e) => e.currentTarget.style.background = 'var(--bg-secondary)'}
+                    >
+                        <span></span> 生徒一覧
                     </button>
                     <div onClick={goHome} style={{ fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-main)' }}>
                         <span>Student Karte</span>
@@ -170,14 +187,12 @@ function App() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                    {/* Last Synced Label */}
                     {lastSynced && (
                         <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginRight: '0.5rem' }}>
                             最終更新: {lastSynced.getHours().toString().padStart(2, '0')}:{lastSynced.getMinutes().toString().padStart(2, '0')}
                         </div>
                     )}
 
-                    {/* Bulk Sync Button */}
                     <button
                         onClick={handleBulkSync}
                         disabled={isBulkSyncing}
@@ -189,7 +204,7 @@ function App() {
                         {isBulkSyncing ? (
                             <span>同期中... {syncProgress.current}/{syncProgress.total}</span>
                         ) : (
-                            <span>↻ 全員同期</span>
+                            <span> 全員同期</span>
                         )}
                     </button>
 
@@ -231,10 +246,8 @@ function App() {
                 </div>
             </header>
 
-            {/* MAIN CONTENT AREA */}
             <div style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
 
-                {/* SIDEBAR - Modern Clean: White with border */}
                 <div style={{
                     position: 'absolute',
                     top: 0,
@@ -249,10 +262,10 @@ function App() {
                     boxShadow: 'var(--shadow-lg)'
                 }}>
                     <div style={{ textAlign: 'right', padding: '0.5rem' }}>
-                        <button onClick={() => setIsSidebarOpen(false)} style={{ color: 'var(--text-muted)', padding: '0.5rem' }}>✕ 閉じる</button>
+                        <button onClick={() => setIsSidebarOpen(false)} style={{ color: 'var(--text-muted)', padding: '0.5rem' }}> 閉じる</button>
                     </div>
                     <StudentList
-                        students={mockStudents}
+                        students={students}
                         studentStats={studentStats}
                         onSelectStudent={handleSelect}
                         selectedId={selectedStudent?.id}
@@ -260,7 +273,6 @@ function App() {
                     />
                 </div>
 
-                {/* OVERLAY BACKDROP */}
                 {isSidebarOpen && (
                     <div
                         onClick={() => setIsSidebarOpen(false)}
@@ -268,11 +280,10 @@ function App() {
                     />
                 )}
 
-                {/* VIEW CONTAINER */}
                 <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto', background: 'var(--bg-main)' }}>
                     {currentView === 'home' && (
                         <HomeView
-                            students={mockStudents}
+                            students={students}
                             studentStats={studentStats}
                             onNotify={addToast}
                             onNavigate={(view, data) => {
@@ -294,7 +305,7 @@ function App() {
                     )}
                     {currentView === 'student' && !selectedStudent && (
                         <HomeView
-                            students={mockStudents}
+                            students={students}
                             studentStats={studentStats}
                             onNotify={addToast}
                             onNavigate={(view, data) => {
@@ -309,13 +320,12 @@ function App() {
 
             </div>
 
-            {/* Toast Container */}
             <div className="toast-container">
                 {toasts.map(toast => (
-                    <div key={toast.id} className={`toast toast-${toast.type}`}>
-                        {toast.type === 'success' && '✅'}
-                        {toast.type === 'error' && '⚠️'}
-                        {toast.type === 'info' && 'ℹ️'}
+                    <div key={toast.id} className={"toast toast-" + toast.type}>
+                        {toast.type === 'success' && ''}
+                        {toast.type === 'error' && ''}
+                        {toast.type === 'info' && 'ℹ'}
                         {toast.message}
                     </div>
                 ))}
@@ -325,3 +335,5 @@ function App() {
 }
 
 export default App;
+
+

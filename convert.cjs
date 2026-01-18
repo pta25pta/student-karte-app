@@ -1,0 +1,1 @@
+const fs = require('fs'); const path = require('path'); const { mockStudents } = require('./src/data/mockData.js'); const dbPath = path.join(__dirname, 'server', 'database.json'); const initialData = { students: mockStudents }; fs.writeFileSync(dbPath, JSON.stringify(initialData, null, 2), 'utf-8'); console.log('Database initialized');

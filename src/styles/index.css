@@ -1,11 +1,14 @@
 ﻿/* Global CSS Variables & Design Tokens - Modern Clean (SaaS) */
 :root {
+  --status-success-bg: #ECFDF5;
+  --status-danger-bg: #FEF2F2;
+  --status-warning-bg: #FFFBEB;
   /* HSL Color Palette - Cobalt & Slate */
   --primary-h: 221;
   --primary-s: 83%;
-  --primary-l: 53%;
-  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l)); /* #2563EB Cobalt Blue */
-  --primary-hover: hsl(var(--primary-h), var(--primary-s), 45%);
+  --primary-l: 65%;
+  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l)); /* Lighter Blue */
+  --primary-hover: hsl(var(--primary-h), var(--primary-s), 55%);
 
   --bg-main: #F9FAFB; /* Gray 50 */
   --bg-sidebar: #FFFFFF;
@@ -247,3 +250,243 @@ h1, h2, h3, h4, h5, h6 {
 .toast-error { border-left: 4px solid var(--danger); }
 .toast-info { border-left: 4px solid var(--primary); }
 
+
+/* Dark Theme - Improved */
+[data-theme="dark"] {
+  --primary-h: 221;
+  --primary-s: 83%;
+  --primary-l: 60%;
+  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  --primary-hover: hsl(var(--primary-h), var(--primary-s), 50%);
+
+  --bg-main: #0F172A;
+  --bg-sidebar: #1E293B;
+  --bg-card: #1E293B;
+  --bg-input: #334155;
+  --bg-highlight: rgba(59, 130, 246, 0.2);
+  
+  --text-main: #F1F5F9;
+  --text-muted: #94A3B8;
+  --text-light: #64748B;
+
+  --border-color: #475569;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark - Body & Main Background */
+[data-theme="dark"] body {
+  background: var(--bg-main);
+  color: var(--text-main);
+}
+
+/* Dark - Cards and Panels */
+[data-theme="dark"] .card,
+[data-theme="dark"] .glass-panel {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-main);
+}
+
+/* Dark - All text containers that are currently white */
+[data-theme="dark"] div[style*="background: '#F9FAFB'"],
+[data-theme="dark"] div[style*="background: 'white'"],
+[data-theme="dark"] div[style*="background: white"] {
+  background: var(--bg-input) !important;
+  color: var(--text-main) !important;
+}
+
+/* Dark - Input, Select, Textarea */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+/* Dark - Buttons - Ghost and outline */
+[data-theme="dark"] button {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .btn-ghost:hover {
+  background-color: #334155;
+}
+
+/* Dark - Schedule Items on Home */
+[data-theme="dark"] div[style*="border: '1px solid var(--border-color)'"][style*="borderRadius: '6px'"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Lesson list items */
+[data-theme="dark"] [style*="padding: '1rem'"][style*="borderRadius: '8px'"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Table rows */
+[data-theme="dark"] tr {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+  border-color: var(--border-color);
+}
+
+/* Dark - Info boxes */
+[data-theme="dark"] [style*="background: '#F9FAFB'"] {
+  background: var(--bg-input) !important;
+}
+
+/* Dark - Sticky headers */
+[data-theme="dark"] [style*="position: 'sticky'"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Tab buttons */
+[data-theme="dark"] [style*="borderBottom: '2px solid transparent'"] {
+  color: var(--text-muted);
+}
+
+/* Dark - Section titles and labels */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] label {
+  color: var(--text-main);
+}
+
+/* Dark - Links */
+[data-theme="dark"] a {
+  color: var(--primary);
+}
+
+/* Dark - Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--bg-main);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+/* Dark - Sidebar */
+[data-theme="dark"] nav,
+[data-theme="dark"] aside {
+  background: var(--bg-sidebar) !important;
+}
+
+/* Dark - Modal overlays */
+[data-theme="dark"] [style*="background: 'white'"][style*="borderRadius: '8px'"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Header bar */
+[data-theme="dark"] header,
+[data-theme="dark"] [style*="borderBottom: '1px solid var(--border-color)'"] {
+  border-color: var(--border-color) !important;
+}
+
+/* Dark - Hover effects on items */
+[data-theme="dark"] .hover\:shadow-md:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+}
+
+/* Dark - Better contrast for specific panels */
+[data-theme="dark"] [style*="background: '#EFF6FF'"] {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Dark - Muted text override */
+[data-theme="dark"] [style*="color: 'var(--text-muted)'"],
+[data-theme="dark"] [style*="color: var(--text-muted)"] {
+  color: var(--text-muted) !important;
+}
+
+/* Dark - Button Overrides */
+[data-theme="dark"] button[style*="background: 'var(--bg-card"],
+[data-theme="dark"] button[style*="background: var(--bg-card"] {
+  background: var(--bg-input) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] button {
+  background: var(--bg-input);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] button:not(.btn-primary) {
+  background: var(--bg-input) !important;
+  color: var(--text-main) !important;
+}
+
+[data-theme="dark"] .btn-primary {
+  background: var(--primary) !important;
+  color: white !important;
+}
+
+/* Dark Mode - Aggressive Overrides */
+[data-theme="dark"] [style*="background: white"],
+[data-theme="dark"] [style*="background: 'white'"],
+[data-theme="dark"] [style*="background:'white'"],
+[data-theme="dark"] [style*="background: rgb(255, 255, 255)"],
+[data-theme="dark"] [style*="background-color: white"],
+[data-theme="dark"] [style*="backgroundColor: white"] {
+  background: var(--bg-card) !important;
+  background-color: var(--bg-card) !important;
+}
+
+[data-theme="dark"] [style*="background: #F9FAFB"],
+[data-theme="dark"] [style*="background: '#F9FAFB'"],
+[data-theme="dark"] [style*="background:#F9FAFB"] {
+  background: var(--bg-input) !important;
+}
+
+/* Dark - All divs with padding and border-radius that look like cards */
+[data-theme="dark"] div[style*="padding"][style*="border"] {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
+/* Dark - Status section items */
+[data-theme="dark"] [style*="borderRadius"][style*="border: '1px"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Student list items */
+[data-theme="dark"] [style*="cursor: 'pointer'"][style*="padding"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Select dropdowns */
+[data-theme="dark"] select option {
+  background: var(--bg-input);
+  color: var(--text-main);
+}
+
+/* Dark - Lesson cards */
+[data-theme="dark"] [style*="boxShadow"] {
+  background: var(--bg-card) !important;
+}
+
+/* Dark - Status Colors */
+[data-theme="dark"] {
+  --status-success-bg: rgba(16, 185, 129, 0.2);
+  --status-danger-bg: rgba(239, 68, 68, 0.2);
+  --status-warning-bg: rgba(245, 158, 11, 0.2);
+}

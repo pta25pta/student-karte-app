@@ -1,10 +1,18 @@
-﻿/**
+/**
  * ExternalDataService.js
  * 
  * Handles fetching data from external sources (GAS, Spreadsheets).
  */
 
-const PREDICTION_API_URL = "https://script.google.com/macros/s/AKfycbxYA-mYhuoZlophGmeJZ99poSUTRI-xPLAjilEuyFJoUQ0iEuDpsa5Ini8L-HQceXGF/exec";
+const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyYGrCBZ7fiMxIdhPyGckDIOkc9RA8Op5xyUFk01eTDhO9pxVPurTpd1Bu-nJMguQlz/exec";
+
+const getApiUrl = () => {
+    try {
+        return localStorage.getItem('gasApiUrl') || DEFAULT_API_URL;
+    } catch (e) {
+        return DEFAULT_API_URL;
+    }
+};
 
 const SPREADSHEET_URL = ""; 
 
@@ -18,11 +26,12 @@ export const ExternalDataService = {
    * @returns {Promise<Object>} Full prediction data object
    */
   async fetchPredictionStats(studentId, year, month) {
+    const apiBase = getApiUrl();
     console.log('Fetching prediction stats for ' + studentId + ' (' + year + '/' + month + ') from GAS...');
     
     try {
       // Build URL with studentId, year, and month parameters
-      let url = PREDICTION_API_URL + '?studentId=' + encodeURIComponent(studentId);
+      let url = apiBase + '?studentId=' + encodeURIComponent(studentId);
       if (year && month) {
         url += '&year=' + year + '&month=' + month;
       }
@@ -65,6 +74,34 @@ export const ExternalDataService = {
         history: [],
         error: true
       };
+    }
+  },
+
+  /**
+   * Fetches scenario data for a student from GAS.
+   * @param {string} studentId 
+   * @returns {Promise<Array>} List of scenario objects
+   */
+  async fetchScenarioData(studentId) {
+    const apiBase = getApiUrl();
+    console.log('Fetching scenario data for ' + studentId + ' from GAS...');
+    try {
+      const url = apiBase + '?action=getScenario&studentId=' + encodeURIComponent(studentId);
+      const response = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow'
+      });
+      
+      if (!response.ok) {
+        throw new Error('HTTP error! status: ' + response.status);
+      }
+      
+      const data = await response.json();
+      return data.scenarios || [];
+
+    } catch (error) {
+      console.error('Scenario fetch error:', error);
+      return [];
     }
   },
 

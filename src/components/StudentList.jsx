@@ -96,7 +96,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
             padding: '0.5rem',
             borderRadius: '6px',
             border: '1px solid var(--border-color)',
-            background: 'white',
+            background: 'var(--bg-card, white)',
             color: 'var(--text-main)',
             fontSize: '0.9rem',
             cursor: 'pointer'
@@ -122,7 +122,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
           marginBottom: '0.75rem',
           borderRadius: '6px',
           border: '1px solid var(--border-color)',
-          background: 'white',
+          background: 'var(--bg-card, white)',
           color: 'var(--text-main)',
           fontSize: '0.9rem'
         }}
@@ -138,7 +138,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
             padding: '0.4rem',
             borderRadius: '6px',
             border: '1px solid var(--border-color)',
-            background: 'white',
+            background: 'var(--bg-card, white)',
             color: 'var(--text-main)',
             fontSize: '0.85rem'
           }}
@@ -178,14 +178,14 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                 padding: '0.6rem 0.75rem',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                background: isSelected ? '#EFF6FF' : 'transparent',
-                border: isSelected ? '1px solid #BFDBFE' : '1px solid transparent',
+                background: isSelected ? 'var(--bg-highlight, #EFF6FF)' : 'transparent',
+                border: isSelected ? '1px solid var(--primary)' : '1px solid transparent',
                 borderLeft: isSelected ? '4px solid var(--primary)' : '4px solid transparent',
                 transition: 'all 0.1s',
                 color: 'var(--text-main)'
               }}
               onMouseEnter={e => {
-                if (!isSelected) e.currentTarget.style.background = '#F9FAFB';
+                if (!isSelected) e.currentTarget.style.background = 'var(--bg-input, #F9FAFB)';
               }}
               onMouseLeave={e => {
                 if (!isSelected) e.currentTarget.style.background = 'transparent';
@@ -199,7 +199,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                     <span style={{
                       padding: '0.15rem 0.4rem',
                       borderRadius: '4px',
-                      background: stats.winRate >= 60 ? '#ECFDF5' : '#FEF2F2',
+                      background: stats.winRate >= 60 ? 'var(--status-success-bg, #ECFDF5)' : 'var(--status-danger-bg, #FEF2F2)',
                       color: stats.winRate >= 60 ? '#059669' : '#DC2626',
                       fontWeight: '500'
                     }}>
@@ -210,7 +210,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                       <span style={{
                         padding: '0.15rem 0.4rem',
                         borderRadius: '4px',
-                        background: stats.rank <= 3 ? '#FFFBEB' : '#F3F4F6',
+                        background: stats.rank <= 3 ? 'var(--status-warning-bg, #FFFBEB)' : 'var(--bg-input, #F3F4F6)',
                         color: stats.rank <= 3 ? '#D97706' : '#6B7280',
                         fontWeight: '500'
                       }}>
@@ -246,7 +246,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
           padding: '0.75rem',
           borderTop: '1px solid var(--border-color)',
           marginTop: '0.5rem',
-          background: '#F9FAFB',
+          background: 'var(--bg-input, #F9FAFB)',
           borderRadius: '6px'
         }}>
           ↑「全員同期」でデータ取得
@@ -269,7 +269,7 @@ function FilterButton({ label, active, onClick, disabled, color }) {
         padding: '0.35rem 0.5rem',
         borderRadius: '6px',
         border: active ? 'none' : '1px solid var(--border-color)',
-        background: active ? activeBg : 'white',
+        background: active ? activeBg : 'var(--bg-card, white)',
         color: active ? activeColor : 'var(--text-muted)',
         fontSize: '0.75rem',
         cursor: disabled ? 'not-allowed' : 'pointer',
