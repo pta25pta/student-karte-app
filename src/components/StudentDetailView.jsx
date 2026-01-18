@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StudentService } from '../services/StudentService';
 import { ExternalDataService } from '../services/ExternalDataService';
 import { ScenarioPanel } from './ScenarioPanel';
