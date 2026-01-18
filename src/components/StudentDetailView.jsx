@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { StudentService } from '../services/StudentService';
 import { ExternalDataService } from '../services/ExternalDataService';
 import { ScenarioPanel } from './ScenarioPanel';
@@ -334,7 +334,7 @@ function LessonMemoField({ label, value, onChange, placeholder }) {
   );
 }
 
-function StudentLessonTab({ student, onUpdate }) {
+function StudentLessonTab({ student, onUpdate, onNotify }) {
   const [events] = useState(() => {
     const saved = localStorage.getItem('scheduleData');
     if (saved) {
@@ -440,20 +440,20 @@ function StudentLessonTab({ student, onUpdate }) {
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1rem', gap: '1rem', overflowY: 'auto' }}>
               <LessonMemoField
                 label="生徒本人の成長"
-                value={memoGrowth}
-                onChange={(val) => handleMemoChange('growth', val)}
+                value={localMemo.growth}
+                onChange={(val) => handleLocalChange('growth', val)}
                 placeholder="生徒の成長・良かった点を記入..."
               />
               <LessonMemoField
                 label="課題"
-                value={memoChallenges}
-                onChange={(val) => handleMemoChange('challenges', val)}
+                value={localMemo.challenges}
+                onChange={(val) => handleLocalChange('challenges', val)}
                 placeholder="今後の課題・改善点を記入..."
               />
               <LessonMemoField
                 label="講師メモ"
-                value={memoInstructor}
-                onChange={(val) => handleMemoChange('instructor', val)}
+                value={localMemo.instructor}
+                onChange={(val) => handleLocalChange('instructor', val)}
                 placeholder="講師としてのメモ・覚え書きを記入..."
               />
             </div>
