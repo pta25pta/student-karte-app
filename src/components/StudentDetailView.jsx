@@ -206,6 +206,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
           <StudentLessonTab
             student={localStudent}
             onUpdate={handleUpdate}
+            onNotify={onNotify}
           />
         )}
       </div>
@@ -423,6 +424,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     const currentMemos = student.lessonMemos || {};
     const newMemos = { ...currentMemos, [selectedEventId]: { ...localMemo } };
     await onUpdate('lessonMemos', newMemos);
+    if (onNotify) onNotify('授業記録を保存しました', 'success');
   };
 
   // Parse "第X回" logic
