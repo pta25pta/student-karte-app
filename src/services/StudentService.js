@@ -51,6 +51,22 @@ export const StudentService = {
         }
     },
 
+    async updateLessonMemos(studentId, lessonMemos) {
+        try {
+            const res = await fetch(API_BASE + '/students/' + encodeURIComponent(studentId) + '/lesson-memos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lessonMemos })
+            });
+
+            if (!res.ok) throw new Error('Failed to update lesson memos');
+            return await res.json();
+        } catch (err) {
+            console.error('API Error:', err);
+            throw err;
+        }
+    },
+
     async getMemoHistory(id) {
         try {
             const res = await fetch(API_BASE + '/students/' + encodeURIComponent(id) + '/memo-history');
@@ -59,6 +75,22 @@ export const StudentService = {
         } catch (err) {
             console.error('API Error:', err);
             return [];
+        }
+    },
+
+    async updateMemoHistory(studentId, memoHistory) {
+        try {
+            const res = await fetch(API_BASE + '/students/' + encodeURIComponent(studentId) + '/memo-history', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ memoHistory })
+            });
+
+            if (!res.ok) throw new Error('Failed to update memo history');
+            return await res.json();
+        } catch (err) {
+            console.error('API Error:', err);
+            throw err;
         }
     }
 };

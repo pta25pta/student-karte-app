@@ -54,7 +54,14 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
 
     // API Call
     try {
-      await StudentService.updateStudent(updated);
+      if (field === 'lessonMemos') {
+        await StudentService.updateLessonMemos(localStudent.id, value);
+      } else if (field === 'memoHistory') {
+        await StudentService.updateMemoHistory(localStudent.id, value);
+      } else {
+        await StudentService.updateStudent(updated);
+      }
+
       if (!silent && onNotify) onNotify('保存しました', 'success');
     } catch (err) {
       console.error('Failed to save update', err);

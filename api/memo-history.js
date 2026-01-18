@@ -24,12 +24,12 @@ export default async function handler(req, res) {
     try {
         const doc = await getDoc();
         const sheet = doc.sheetsByTitle['memo_history'];
-        const { id } = req.query; // studentId
+        const { id: studentId } = req.query;
 
         if (req.method === 'GET') {
             const rows = await sheet.getRows();
             const history = rows
-                .filter(r => String(r.get('studentId')) === String(id))
+                .filter(r => String(r.get('studentId')) === String(studentId))
                 .map(r => ({
                     id: r.get('id'),
                     date: r.get('date'),
@@ -37,6 +37,45 @@ export default async function handler(req, res) {
                     tag: r.get('tag')
                 }));
             res.json(history);
+        } else if (req.method === 'POST') {
+            const { memoHistory } = req.body; // Full array of memos
+
+            if (!Array.isArray(memoHistory)) {
+                return res.status(400).json({ error: 'memoHistory array is required' });
+            }
+
+            const rows = await sheet.getRows();
+            const studentRows = rows.filter(r => String(r.get('studentId')) === String(studentId));
+
+            // Sync logic:
+            // 1. Delete rows in sheet that are not in the new array
+            for (const row of studentRows) {
+                const stillExists = memoHistory.find(m => String(m.id) === String(row.get('id')));
+                if (!stillExists) {
+                    await row.delete();
+                }
+            }
+
+            // 2. Update or add rows from the new array
+            for (const memo of memoHistory) {
+                const row = studentRows.find(r => String(r.get('id')) === String(memo.id));
+                if (row) {
+                    row.set('date', memo.date || '');
+                    row.set('content', memo.content || '');
+                    row.set('tag', memo.tag || '');
+                    await row.save();
+                } else {
+                    await sheet.addRow({
+                        studentId: String(studentId),
+                        id: String(memo.id),
+                        date: memo.date || '',
+                        content: memo.content || '',
+                        tag: memo.tag || ''
+                    });
+                }
+            }
+
+            res.json({ success: true });
         } else {
             res.status(405).end();
         }
