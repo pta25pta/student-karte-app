@@ -173,16 +173,14 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
           </div>
         </div>
 
-        {activeTab === 'profile' && (
-          <button
-            onClick={handleFetchPredictionStats}
-            disabled={loadingStats}
-            className="btn-primary"
-            style={{ opacity: loadingStats ? 0.7 : 1, padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}
-          >
-            {loadingStats ? '同期中...' : '🔄 データ同期'}
-          </button>
-        )}
+        <button
+          onClick={handleFetchPredictionStats}
+          disabled={loadingStats}
+          className="btn-primary"
+          style={{ opacity: loadingStats ? 0.7 : 1, padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}
+        >
+          {loadingStats ? '同期中...' : '🔄 データ同期'}
+        </button>
       </div>
 
       {/* TABS */}
@@ -418,7 +416,13 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
 
   const handleLocalChange = (field, val) => {
     setLocalMemo(prev => ({ ...prev, [field]: val }));
-    handleMemoChange(field, val);
+  };
+
+  const handleSaveMemo = async () => {
+    if (!selectedEventId) return;
+    const currentMemos = student.lessonMemos || {};
+    const newMemos = { ...currentMemos, [selectedEventId]: { ...localMemo } };
+    await onUpdate('lessonMemos', newMemos);
   };
 
   // Parse "第X回" logic
@@ -436,7 +440,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
           {events.length === 0 ? (
             <div style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-muted)' }}>予定なし</div>
           ) : (
-            events.sort((a, b) => new Date(a.date) - new Date(b.date)).map(ev => {
+            [...events].sort((a, b) => new Date(a.date) - new Date(b.date)).map(ev => {
               const lessonNo = getLessonNo(ev);
               const isSelected = ev.id === selectedEventId;
               const memoData = (student.lessonMemos || {})[ev.id];
@@ -488,6 +492,16 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
               <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 📅 {selectedEvent.date} {(selectedEvent.description || '').replace(/(第\d+回)/, '')}
               </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', background: 'white' }}>
+              <button
+                onClick={handleSaveMemo}
+                className="btn-primary"
+                style={{ padding: '0.4rem 1.2rem', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                💾 授業記録を保存
+              </button>
             </div>
 
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '1rem', gap: '1rem', overflowY: 'auto' }}>
