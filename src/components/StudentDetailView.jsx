@@ -167,8 +167,8 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
               <span>{localStudent.dob}</span>
             </div>
             <div style={{ display: 'flex', gap: '1rem' }}>
-              <span>?? トレード歴: {localStudent.tradeHistory}年</span>
-              <span>?? トレーニング歴: {localStudent.trainingHistory}年</span>
+              <span>📈 トレード歴: {localStudent.tradeHistory}年</span>
+              <span>🎓 トレーニング歴: {localStudent.trainingHistory}年</span>
             </div>
           </div>
         </div>
@@ -180,15 +180,15 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
             className="btn-primary"
             style={{ opacity: loadingStats ? 0.7 : 1, padding: '0.3rem 0.8rem', fontSize: '0.85rem' }}
           >
-            {loadingStats ? '同期中...' : '? データ同期'}
+            {loadingStats ? '同期中...' : '🔄 データ同期'}
           </button>
         )}
       </div>
 
       {/* TABS */}
       <div style={{ display: 'flex', gap: '1rem', borderBottom: '1px solid var(--border-color)' }}>
-        <TabButton label="?? カルテ情報" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
-        <TabButton label="?? 授業記録" active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')} />
+        <TabButton label="📋 カルテ情報" active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} />
+        <TabButton label="📖 授業記録" active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')} />
       </div>
 
       {/* CONTENT AREA */}
@@ -196,7 +196,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
         {activeTab === 'profile' ? (
           <StudentProfileTab
             student={localStudent}
-            predictionStats={predictionStats}
+            scenarioData={scenarioData}
             loadingStats={loadingStats}
             selectedMonth={selectedMonth}
             onMonthChange={setSelectedMonth}
@@ -381,6 +381,17 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     return null;
   });
 
+  const selectedEvent = events.find(e => e.id === selectedEventId);
+
+  const handleMemoChange = (field, val) => {
+    if (!selectedEventId) return;
+    const currentMemos = student.lessonMemos || {};
+    const currentEventMemo = currentMemos[selectedEventId] || { growth: '', challenges: '', instructor: '' };
+    const updatedEventMemo = { ...currentEventMemo, [field]: val };
+    const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
+    onUpdate('lessonMemos', newMemos);
+  };
+
   const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '' });
 
   useEffect(() => {
@@ -390,7 +401,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     } else {
       setLocalMemo({ growth: '', challenges: '', instructor: '' });
     }
-  }, [selectedEventId, student.lessonMemos]);
+  }, [selectedEventId, student.lessonMemos, selectedEvent]);
 
   const handleLocalChange = (field, val) => {
     setLocalMemo(prev => ({ ...prev, [field]: val }));
