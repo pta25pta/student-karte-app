@@ -54,6 +54,17 @@ migrateDataIfNeeded();
 
 // --- API Routes (Async/Await updated) ---
 
+// POST: Login authentication
+app.post('/api/auth', async (req, res) => {
+  const { email, password } = req.body;
+  // Simple check for now, can be moved to env vars later
+  if (email === 'pta25pta@gmail.com' && password === 'pta2025pta44') {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+});
+
 // GET: All students
 app.get('/api/students', async (req, res) => {
   try {
@@ -109,3 +120,4 @@ if (require.main === module) {
 
 // Export for Vercel
 module.exports = app;
+
