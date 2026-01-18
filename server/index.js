@@ -57,8 +57,10 @@ migrateDataIfNeeded();
 // POST: Login authentication
 app.post('/api/auth', async (req, res) => {
   const { email, password } = req.body;
+  // Debug log (will show in Vercel logs)
+  console.log('Login attempt for:', email);
   // Simple check for now, can be moved to env vars later
-  if (email === 'pta25pta@gmail.com' && password === 'pta2025pta44') {
+  if (email?.trim() === 'pta25pta@gmail.com' && password?.trim() === 'pta2025pta44') {
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false, error: 'Invalid credentials' });
@@ -120,4 +122,5 @@ if (require.main === module) {
 
 // Export for Vercel
 module.exports = app;
+
 
