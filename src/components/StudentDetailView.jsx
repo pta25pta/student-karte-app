@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { StudentService } from '../services/StudentService';
 import { ExternalDataService } from '../services/ExternalDataService';
 import { ScenarioPanel } from './ScenarioPanel';
+import { useModal } from './Modal';
 
 export function StudentDetailView({ student, initialStats, onNotify }) {
+  const [ModalComponent, showConfirm, showAlert] = useModal();
   const [localStudent, setLocalStudent] = useState(student);
   const [predictionStats, setPredictionStats] = useState(initialStats || null);
   const [scenarioData, setScenarioData] = useState([]);
@@ -208,16 +210,22 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
             onMonthChange={setSelectedMonth}
             onUpdate={handleUpdate}
             onNotify={onNotify}
+            showConfirm={showConfirm}
           />
         ) : (
           <StudentLessonTab
             student={localStudent}
             onUpdate={handleUpdate}
+            onUpdate={handleUpdate}
             onNotify={onNotify}
+            showConfirm={showConfirm}
+            showAlert={showAlert}
           />
         )}
       </div>
     </div>
+      { ModalComponent }
+    </div >
   );
 }
 
@@ -245,7 +253,7 @@ function TabButton({ label, active, onClick }) {
 // ----------------------------------------------------------------------
 // TAB 1: PROFILE
 // ----------------------------------------------------------------------
-function StudentProfileTab({ student, predictionStats, scenarioData, loadingStats, selectedMonth, onMonthChange, onUpdate }) {
+function StudentProfileTab({ student, predictionStats, scenarioData, loadingStats, selectedMonth, onMonthChange, onUpdate, showConfirm }) {
   const handleAddMemo = (content, tag) => {
     if (!content.trim()) return;
     const newMemo = {
@@ -258,8 +266,8 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
     onUpdate('memoHistory', newHistory);
   };
 
-  const handleDeleteMemo = (memoId) => {
-    if (!window.confirm('このメモを削除してもよろしいですか？')) return;
+  const handleDeleteMemo = async (memoId) => {
+    if (!await showConfirm('このメモを削除してもよろしいですか？', { type: 'confirm', confirmStyle: 'danger', confirmText: '削除', title: '削除の確認' })) return;
     const newHistory = (student.memoHistory || []).filter(m => m.id !== memoId);
     onUpdate('memoHistory', newHistory);
   };

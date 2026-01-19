@@ -1,6 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useModal } from './Modal';
 
 export function HomeView({ students = [], studentStats = {}, onNavigate }) {
+  const [ModalComponent, showConfirm, showAlert] = useModal();
   // --- Data Processing -----------------------------------------
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [selectedTerm, setSelectedTerm] = useState('all');
@@ -8,7 +10,7 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [memoText, setMemoText] = useState('');
 
-  const handleSaveMemo = () => {
+  const handleSaveMemo = async () => {
     if (!selectedEvent) return;
 
     try {
@@ -39,15 +41,15 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
             ev.id === selectedEvent.id ? { ...ev, memo: memoText } : ev
           ));
 
-          alert('メモを保存しました');
+          await showAlert('メモを保存しました', { title: '保存完了' });
           setSelectedEvent(null);
         } else {
-          alert('イベントが見つかりませんでした');
+          await showAlert('イベントが見つかりませんでした', { title: 'エラー', confirmStyle: 'danger' });
         }
       }
     } catch (e) {
       console.error('Save failed', e);
-      alert('保存に失敗しました');
+      await showAlert('保存に失敗しました', { title: 'エラー', confirmStyle: 'danger' });
     }
   };
 
@@ -346,6 +348,8 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
 
       </div>
     </div>
+      { ModalComponent }
+    </div >
   );
 }
 

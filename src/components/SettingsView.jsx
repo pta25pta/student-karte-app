@@ -1,8 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useModal } from './Modal';
 
 export function SettingsView() {
+  const [ModalComponent, showConfirm, showAlert] = useModal();
   const [activeTab, setActiveTab] = useState('general');
-  
+
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [autoTheme, setAutoTheme] = useState(localStorage.getItem('autoTheme') === 'true');
   const [darkStartHour, setDarkStartHour] = useState(parseInt(localStorage.getItem('darkStartHour') || '18'));
@@ -10,7 +12,7 @@ export function SettingsView() {
   const [autoSync, setAutoSync] = useState(localStorage.getItem('autoSync') === 'true');
 
   const [apiUrl, setApiUrl] = useState(localStorage.getItem('gasApiUrl') || 'https://script.google.com/macros/s/AKfycbyYGrCBZ7fiMxIdhPyGckDIOkc9RA8Op5xyUFk01eTDhO9pxVPurTpd1Bu-nJMguQlz/exec');
-  
+
   const getDefaultRanks = () => [
     { id: 'S', label: 'S', color: '#F59E0B' },
     { id: 'A', label: 'A', color: '#3B82F6' },
@@ -43,7 +45,7 @@ export function SettingsView() {
 
   useEffect(() => { localStorage.setItem('gasApiUrl', apiUrl); }, [apiUrl]);
   useEffect(() => { localStorage.setItem('rankSettings', JSON.stringify(rankSettings)); }, [rankSettings]);
-  useEffect(() => { 
+  useEffect(() => {
     localStorage.setItem('primaryColor', primaryColor);
     document.documentElement.style.setProperty('--primary', primaryColor);
   }, [primaryColor]);
@@ -81,14 +83,14 @@ export function SettingsView() {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       try {
         const data = JSON.parse(event.target.result);
         if (data.schedule) localStorage.setItem('scheduleData', JSON.stringify(data.schedule));
-        alert('バックアップをインポートしました。');
+        await showAlert('バックアップをインポートしました。', { title: 'インポート完了' });
         window.location.reload();
       } catch (err) {
-        alert('インポートに失敗しました: ' + err.message);
+        await showAlert('インポートに失敗しました: ' + err.message, { title: 'エラー', confirmStyle: 'danger' });
       }
     };
     reader.readAsText(file);
@@ -101,8 +103,8 @@ export function SettingsView() {
     setNewTagColor('#3B82F6');
   };
 
-  const handleDeleteTag = (id) => {
-    if (window.confirm('このタグを削除しますか？')) {
+  const handleDeleteTag = async (id) => {
+    if (await showConfirm('このタグを削除しますか？', { title: '削除の確認', confirmText: '削除', confirmStyle: 'danger' })) {
       setCustomTags(customTags.filter(t => t.id !== id));
     }
   };
@@ -146,7 +148,7 @@ export function SettingsView() {
 
       {activeTab === 'general' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1rem' }}>
-          
+
           <section className="card" style={cardStyle}>
             <h3 style={sectionTitle}>テーマ設定</h3>
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
@@ -249,7 +251,7 @@ export function SettingsView() {
 
       {activeTab === 'admin' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '1rem' }}>
-          
+
           <section className="card" style={{ ...cardStyle, gridColumn: '1 / -1' }}>
             <h3 style={sectionTitle}>API接続設定</h3>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>GAS Web App URL</label>
@@ -273,6 +275,7 @@ export function SettingsView() {
           </section>
         </div>
       )}
+      {ModalComponent}
     </div>
   );
 }

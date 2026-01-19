@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Tesseract from 'tesseract.js';
+import { useModal } from './Modal';
 
 const initialEventsTerm1 = [
     { id: '1', date: '2025-12-21', title: '事前準備会', description: '20:00~22:00', memo: '' },
@@ -51,6 +52,7 @@ export function getDefaultScheduleData() {
 }
 
 export function ScheduleView() {
+    const [ModalComponent, showConfirm, showAlert] = useModal();
     const [terms, setTerms] = useState(() => {
         const saved = localStorage.getItem('scheduleData');
         return saved ? JSON.parse(saved) : getDefaultScheduleData();
@@ -104,18 +106,18 @@ export function ScheduleView() {
         setSelectedTermId(nextId);
     };
 
-    const handleDeleteTerm = (termId) => {
+    const handleDeleteTerm = async (termId) => {
         const termToDelete = terms.find(t => t.id === termId);
         if (!termToDelete) return;
 
         if (termToDelete.events.length > 0) {
-            if (!window.confirm('この期にはイベントが登録されています。本当に削除しますか？')) {
+            if (!await showConfirm('この期にはイベントが登録されています。本当に削除しますか？', { title: '削除の確認', confirmText: '削除', confirmStyle: 'danger' })) {
                 return;
             }
         }
 
         if (terms.length <= 1) {
-            alert('最後の1つは削除できません');
+            await showAlert('最後の1つは削除できません', { title: 'エラー', confirmStyle: 'danger' });
             return;
         }
 
@@ -126,8 +128,8 @@ export function ScheduleView() {
         }
     };
 
-    const handleDelete = (id) => {
-        if (window.confirm('このイベントを削除しますか？')) {
+    const handleDelete = async (id) => {
+        if (await showConfirm('このイベントを削除しますか？', { title: '削除の確認', confirmText: '削除', confirmStyle: 'danger' })) {
             const updatedEvents = currentEvents.filter(e => e.id !== id);
             updateTermEvents(selectedTermId, updatedEvents);
         }
@@ -145,9 +147,9 @@ export function ScheduleView() {
         setMemoText(ev.memo || '');
     };
 
-    const handleManualAdd = () => {
+    const handleManualAdd = async () => {
         if (!newDate || !newTitle) {
-            alert('日付とタイトルは必須です');
+            await showAlert('日付とタイトルは必須です', { title: '入力エラー', confirmStyle: 'danger' });
             return;
         }
         const newEvent = {
@@ -162,7 +164,7 @@ export function ScheduleView() {
         setNewTitle('');
         setNewDesc('');
         setIsFormOpen(false);
-        alert(currentTerm.name + 'にイベントを追加しました');
+        await showAlert(currentTerm.name + 'にイベントを追加しました', { title: '追加完了' });
     };
 
     const handleImageUpload = async (e) => {
@@ -179,13 +181,13 @@ export function ScheduleView() {
             setOcrText(result.data.text);
         } catch (err) {
             console.error(err);
-            alert('画像読み取りに失敗しました');
+            await showAlert('画像読み取りに失敗しました', { title: 'エラー', confirmStyle: 'danger' });
         } finally {
             setLoading(false);
         }
     };
 
-    const handleParseAndAdd = () => {
+    const handleParseAndAdd = async () => {
         const lines = ocrText.split(/\r?\n/);
         const newEvents = [];
         const dateRegex = /(\d{4}\/\d{1,2}\/\d{1,2})/;
@@ -213,9 +215,9 @@ export function ScheduleView() {
         if (newEvents.length > 0) {
             updateTermEvents(selectedTermId, [...currentEvents, ...newEvents]);
             setOcrText('');
-            alert(newEvents.length + ' 件のイベントを追加しました！');
+            await showAlert(newEvents.length + ' 件のイベントを追加しました！', { title: '解析完了' });
         } else {
-            alert('日付を含むイベントが見つかりませんでした。テキストを手動で調整してください。');
+            await showAlert('日付を含むイベントが見つかりませんでした。テキストを手動で調整してください。', { title: '解析結果', confirmStyle: 'danger' });
         }
     };
 
@@ -507,5 +509,7 @@ export function ScheduleView() {
                 </div>
             </div>
         </div>
+            { ModalComponent }
+        </div >
     );
 }
