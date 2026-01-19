@@ -53,7 +53,49 @@ export default async function handler(req, res) {
             const { id } = req.query;
             const updates = req.body;
 
-            // --- Auto-Add Columns Logic ---
+            // --- BATCH UPDATE MODE ---
+            if (Array.isArray(updates)) {
+                await sheet.loadHeaderRow();
+                let newHeaders = [...sheet.headerValues];
+                let headerChanged = false;
+
+                // Check for new headers across all updates
+                updates.forEach(u => {
+                    Object.keys(u).forEach(key => {
+                        if (!newHeaders.includes(key) && !EXCLUDE_KEYS.includes(key)) {
+                            newHeaders.push(key);
+                            headerChanged = true;
+                        }
+                    });
+                });
+
+                if (headerChanged) {
+                    await sheet.setHeaderRow(newHeaders);
+                }
+
+                // Perform Updates
+                const rows = await sheet.getRows();
+                // Using loop for safety, though Promise.all could be faster (risk of rate limit)
+                for (const update of updates) {
+                    if (!update.id) continue;
+                    const row = rows.find(r => String(r.get('id')) === String(update.id));
+                    if (row) {
+                        Object.keys(update).forEach(key => {
+                            if (!EXCLUDE_KEYS.includes(key)) {
+                                let val = update[key];
+                                if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
+                                row.set(key, val);
+                            }
+                        });
+                        await row.save();
+                    }
+                }
+                res.json({ success: true, count: updates.length });
+                return;
+            }
+            // -------------------------
+
+            // --- Auto-Add Columns Logic (Single) ---
             await sheet.loadHeaderRow();
             const currentHeaders = sheet.headerValues;
             const newHeaders = [...currentHeaders];
