@@ -197,6 +197,12 @@ class GoogleSheetsDatabase {
         }
 
         if (updates.memoHistory) {
+            await memoSheet.loadHeaderRow();
+            const mHeaders = memoSheet.headerValues;
+            if (!mHeaders.includes('tag')) {
+                await memoSheet.setHeaderRow([...mHeaders, 'tag']);
+            }
+
             const mRows = await memoSheet.getRows();
             const studentMRows = mRows.filter(r => r.get('studentId') === String(id));
             const newIds = updates.memoHistory.map(m => String(m.id));
