@@ -1,14 +1,16 @@
 import { useState, useMemo } from 'react'
+import { StudentService } from '../services/StudentService'
 
-export function StudentList({ students, studentStats = {}, onSelectStudent, selectedId, style }) {
+export function StudentList({ students, studentStats = {}, onSelectStudent, selectedId, onStudentsChange, style }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('name');
+    const [sortBy, setSortBy] = useState('custom'); // Default to custom sort
     const [filterBy, setFilterBy] = useState('all');
-    const [selectedTerm, setSelectedTerm] = useState(1); // Default to Term 1
+    const [selectedTerm, setSelectedTerm] = useState(1);
+    const [draggingId, setDraggingId] = useState(null);
+    const [dragOverId, setDragOverId] = useState(null);
 
     // Get available terms from students
     const availableTerms = useMemo(() => {
-        // Cast to Number for unique set and sorting
         const terms = [...new Set(students.map(s => Number(s.term || 1)))].sort((a, b) => a - b);
         return terms;
     }, [students]);
@@ -20,7 +22,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
             stats: studentStats[s.id] || null
         }));
 
-        // Filter by term first - use Number cast for comparison
+        // Filter by term first
         result = result.filter(s => Number(s.term || 1) === selectedTerm);
 
         // Filter by search term
@@ -64,10 +66,85 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                 const bRank = typeof b.stats?.rank === 'number' ? b.stats.rank : 999;
                 return aRank - bRank;
             });
+        } else if (sortBy === 'custom') {
+            result.sort((a, b) => {
+                const aOrder = a.displayOrder !== undefined ? Number(a.displayOrder) : Number.MAX_SAFE_INTEGER;
+                const bOrder = b.displayOrder !== undefined ? Number(b.displayOrder) : Number.MAX_SAFE_INTEGER;
+                if (aOrder === bOrder) return a.name.localeCompare(b.name, 'ja');
+                return aOrder - bOrder;
+            });
         }
 
         return result;
     }, [students, studentStats, searchTerm, sortBy, filterBy, selectedTerm]);
+
+    const handleDragStart = (e, id) => {
+        setDraggingId(id);
+        e.dataTransfer.effectAllowed = 'move';
+    };
+
+    const handleDragOver = (e, id) => {
+        e.preventDefault();
+        if (id !== dragOverId) {
+            setDragOverId(id);
+        }
+    };
+
+    const handleDragEnd = () => {
+        setDraggingId(null);
+        setDragOverId(null);
+    };
+
+    const handleDrop = async (e, targetId) => {
+        e.preventDefault();
+        if (!draggingId || draggingId === targetId) return;
+
+        // Only allow reordering when not searching/filtering significantly for simplicity
+        if (searchTerm || filterBy !== 'all') {
+            alert('検索中や絞り込み中は並べ替えできません。');
+            return;
+        }
+
+        const items = [...processedStudents];
+        const dragIndex = items.findIndex(s => s.id === draggingId);
+        const dropIndex = items.findIndex(s => s.id === targetId);
+
+        if (dragIndex === -1 || dropIndex === -1) return;
+
+        // Move item
+        const [movedItem] = items.splice(dragIndex, 1);
+        items.splice(dropIndex, 0, movedItem);
+
+        // Update display order for all items in this term/view
+        const updatedStudents = items.map((s, idx) => ({
+            ...s,
+            displayOrder: idx + 1
+        }));
+
+        // Optimistic UI update
+        if (onStudentsChange) {
+            // Merge back into total students array
+            const newTotalStudents = students.map(s => {
+                const found = updatedStudents.find(us => us.id === s.id);
+                return found ? found : s;
+            });
+            onStudentsChange(newTotalStudents);
+        }
+
+        // Persistence
+        try {
+            const batch = updatedStudents.map(s => ({
+                id: s.id,
+                displayOrder: s.displayOrder
+            }));
+            await StudentService.updateStudentsBatch(batch);
+        } catch (err) {
+            console.error('Failed to save order:', err);
+        }
+
+        setDraggingId(null);
+        setDragOverId(null);
+    };
 
     const hasSyncedData = Object.keys(studentStats).length > 0;
 
@@ -144,6 +221,7 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                         fontSize: '0.85rem'
                     }}
                 >
+                    <option value="custom">並べ替え順</option>
                     <option value="name">名前順</option>
                     <option value="winRate" disabled={!hasSyncedData}>勝率順</option>
                     <option value="accuracy" disabled={!hasSyncedData}>的中率順</option>
@@ -167,32 +245,33 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                 )}
                 {processedStudents.map(student => {
                     const stats = student.stats;
-                    // const isLowPerformance = stats && stats.winRate < 60;
                     const hasNotSubmitted = stats && stats.prediction === null;
                     const isSelected = selectedId === student.id;
+                    const isDragging = draggingId === student.id;
+                    const isDragOver = dragOverId === student.id;
 
                     return (
                         <div
                             key={student.id}
+                            draggable={sortBy === 'custom' && !searchTerm && filterBy === 'all'}
+                            onDragStart={(e) => handleDragStart(e, student.id)}
+                            onDragOver={(e) => handleDragOver(e, student.id)}
+                            onDragEnd={handleDragEnd}
+                            onDrop={(e) => handleDrop(e, student.id)}
                             onClick={() => onSelectStudent(student)}
                             style={{
                                 padding: '0.6rem 0.75rem',
                                 borderRadius: '6px',
-                                cursor: 'pointer',
-                                background: isSelected ? 'var(--bg-highlight, #EFF6FF)' : 'transparent',
-                                border: isSelected ? '1px solid var(--primary)' : '1px solid transparent',
+                                cursor: sortBy === 'custom' ? 'grab' : 'pointer',
+                                background: isSelected ? 'var(--bg-highlight, #EFF6FF)' : (isDragOver ? '#F3F4F6' : 'transparent'),
+                                border: isSelected ? '1px solid var(--primary)' : (isDragOver ? '1px dashed var(--primary)' : '1px solid transparent'),
                                 borderLeft: isSelected ? '4px solid var(--primary)' : '4px solid transparent',
                                 transition: 'all 0.1s',
                                 color: 'var(--text-main)',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '0.75rem' // Gap between icon and text
-                            }}
-                            onMouseEnter={e => {
-                                if (!isSelected) e.currentTarget.style.background = 'var(--bg-input, #F9FAFB)';
-                            }}
-                            onMouseLeave={e => {
-                                if (!isSelected) e.currentTarget.style.background = 'transparent';
+                                gap: '0.75rem',
+                                opacity: isDragging ? 0.5 : 1
                             }}
                         >
                             {/* Icon Avatar */}

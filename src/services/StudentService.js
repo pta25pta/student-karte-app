@@ -40,6 +40,22 @@ export const StudentService = {
         }
     },
 
+    async updateStudentsBatch(students) {
+        try {
+            const res = await fetch(API_BASE + '/students', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(students)
+            });
+
+            if (!res.ok) throw new Error('Failed to batch update students');
+            return await res.json();
+        } catch (err) {
+            console.error('API Error:', err);
+            throw err;
+        }
+    },
+
     async getLessonMemos(id) {
         try {
             const res = await fetch(API_BASE + '/students/' + encodeURIComponent(id) + '/lesson-memos');

@@ -276,6 +276,7 @@ function App() {
                         studentStats={studentStats}
                         onSelectStudent={handleSelect}
                         selectedId={selectedStudent?.id}
+                        onStudentsChange={setStudents}
                         style={{ height: 'calc(100% - 40px)', width: '100%', border: 'none' }}
                     />
                 </div>
