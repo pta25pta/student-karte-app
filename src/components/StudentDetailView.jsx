@@ -402,28 +402,62 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
   };
 
   const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '' });
+  const [hasDraft, setHasDraft] = useState(false);
 
+  // Draft key for localStorage
+  const getDraftKey = (eventId) => `draft_lesson_${student.id}_${eventId}`;
+
+  // Load saved data OR draft on event change
   useEffect(() => {
     if (selectedEvent) {
-      const memoData = (student.lessonMemos || {})[selectedEventId];
-      if (!memoData) {
-        setLocalMemo({ growth: '', challenges: '', instructor: '' });
-      } else if (typeof memoData === 'string') {
-        setLocalMemo({ growth: memoData, challenges: '', instructor: '' });
+      const draftKey = getDraftKey(selectedEventId);
+      const savedDraft = localStorage.getItem(draftKey);
+
+      if (savedDraft) {
+        // Load draft if exists
+        try {
+          const draft = JSON.parse(savedDraft);
+          setLocalMemo(draft);
+          setHasDraft(true);
+        } catch (e) {
+          localStorage.removeItem(draftKey);
+          setHasDraft(false);
+        }
       } else {
-        setLocalMemo({
-          growth: memoData.growth || '',
-          challenges: memoData.challenges || '',
-          instructor: memoData.instructor || ''
-        });
+        // Load from API data
+        const memoData = (student.lessonMemos || {})[selectedEventId];
+        if (!memoData) {
+          setLocalMemo({ growth: '', challenges: '', instructor: '' });
+        } else if (typeof memoData === 'string') {
+          setLocalMemo({ growth: memoData, challenges: '', instructor: '' });
+        } else {
+          setLocalMemo({
+            growth: memoData.growth || '',
+            challenges: memoData.challenges || '',
+            instructor: memoData.instructor || ''
+          });
+        }
+        setHasDraft(false);
       }
     } else {
       setLocalMemo({ growth: '', challenges: '', instructor: '' });
+      setHasDraft(false);
     }
-  }, [selectedEventId, student.lessonMemos, selectedEvent]);
+  }, [selectedEventId, student.lessonMemos, selectedEvent, student.id]);
 
+  // Save draft to localStorage on change (debounced)
+  const draftTimeoutRef = useRef(null);
   const handleLocalChange = (field, val) => {
-    setLocalMemo(prev => ({ ...prev, [field]: val }));
+    const newMemo = { ...localMemo, [field]: val };
+    setLocalMemo(newMemo);
+    setHasDraft(true);
+
+    // Debounced save to localStorage
+    if (draftTimeoutRef.current) clearTimeout(draftTimeoutRef.current);
+    draftTimeoutRef.current = setTimeout(() => {
+      const draftKey = getDraftKey(selectedEventId);
+      localStorage.setItem(draftKey, JSON.stringify(newMemo));
+    }, 300);
   };
 
   const handleSaveMemo = async () => {
@@ -431,6 +465,12 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     const currentMemos = student.lessonMemos || {};
     const newMemos = { ...currentMemos, [selectedEventId]: { ...localMemo } };
     await onUpdate('lessonMemos', newMemos);
+
+    // Clear draft after successful save
+    const draftKey = getDraftKey(selectedEventId);
+    localStorage.removeItem(draftKey);
+    setHasDraft(false);
+
     if (onNotify) onNotify('授業記録を保存しました', 'success');
   };
 
@@ -503,7 +543,13 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', background: 'white' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 1rem', borderBottom: '1px solid var(--border-color)', background: 'white' }}>
+              {hasDraft && (
+                <span style={{ fontSize: '0.75rem', color: '#F59E0B', background: '#FEF3C7', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ✏️ 下書きあり
+                </span>
+              )}
+              {!hasDraft && <span />}
               <button
                 onClick={handleSaveMemo}
                 className="btn-primary"
