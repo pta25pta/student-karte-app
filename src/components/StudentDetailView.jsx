@@ -369,6 +369,7 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
           history={student.memoHistory || []}
           onAdd={handleAddMemo}
           onDelete={handleDeleteMemo}
+          studentId={student.id}
         />
       </div>
     </div>
@@ -1018,11 +1019,13 @@ function StatBox({ label, value, highlight }) {
   );
 }
 
-function MemoSection({ history, onAdd, onDelete }) {
+// Draggable Split Pane Logic with Draft Autosave
+function MemoSection({ history, onAdd, onDelete, studentId }) {
   const [text, setText] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
   const [inputWidth, setInputWidth] = useState(260);
   const [isResizing, setIsResizing] = useState(false);
+  const [hasDraft, setHasDraft] = useState(false);
   const scrollRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -1038,6 +1041,39 @@ function MemoSection({ history, onAdd, onDelete }) {
       return saved ? JSON.parse(saved) : defaultTags;
     } catch { return defaultTags; }
   })();
+
+  const getDraftKey = () => `draft_memo_${studentId}`;
+
+  // Load draft
+  useEffect(() => {
+    if (!studentId) return;
+    const saved = localStorage.getItem(getDraftKey());
+    if (saved) {
+      try {
+        const draft = JSON.parse(saved);
+        if (draft.content) setText(draft.content);
+        if (draft.tag) setSelectedTag(draft.tag);
+        setHasDraft(true);
+      } catch (e) {
+        // ignore invalid json
+      }
+    }
+  }, [studentId]);
+
+  // Save draft (debounced)
+  useEffect(() => {
+    if (!studentId) return;
+    const timer = setTimeout(() => {
+      if (text || selectedTag) {
+        localStorage.setItem(getDraftKey(), JSON.stringify({ content: text, tag: selectedTag }));
+        setHasDraft(true);
+      } else {
+        localStorage.removeItem(getDraftKey());
+        setHasDraft(false);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [text, selectedTag, studentId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -1089,6 +1125,10 @@ function MemoSection({ history, onAdd, onDelete }) {
     onAdd(text, selectedTag);
     setText('');
     setSelectedTag(null);
+    if (studentId) {
+      localStorage.removeItem(getDraftKey());
+      setHasDraft(false);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -1205,7 +1245,14 @@ function MemoSection({ history, onAdd, onDelete }) {
             fontSize: '0.85rem'
           }}
         />
-        <button onClick={handleSubmit} className="btn-primary" style={{ padding: '0.4rem' }}>追加</button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {hasDraft && (
+            <span style={{ fontSize: '0.75rem', color: '#F59E0B', background: '#FEF3C7', padding: '2px 6px', borderRadius: '4px' }}>
+              ✏️ 下書き保存中
+            </span>
+          )}
+          <button onClick={handleSubmit} className="btn-primary" style={{ padding: '0.4rem', marginLeft: 'auto' }}>追加</button>
+        </div>
       </div>
     </div >
   );
