@@ -223,9 +223,8 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
           />
         )}
       </div>
+      {ModalComponent}
     </div>
-      { ModalComponent }
-    </div >
   );
 }
 
