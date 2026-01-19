@@ -27,6 +27,8 @@ const STUDENT_HEADERS = [
     'verificationProgress', 'tradeCompetition', 'hasToreTore', 'photoUrl'
 ];
 
+const EXCLUDE_KEYS = ['lessonMemos', 'memoHistory'];
+
 export default async function handler(req, res) {
     try {
         const doc = await getDoc();
@@ -51,12 +53,30 @@ export default async function handler(req, res) {
             const { id } = req.query;
             const updates = req.body;
 
+            // --- Auto-Add Columns Logic ---
+            await sheet.loadHeaderRow();
+            const currentHeaders = sheet.headerValues;
+            const newHeaders = [...currentHeaders];
+            let headerChanged = false;
+
+            Object.keys(updates).forEach(key => {
+                if (!newHeaders.includes(key) && !EXCLUDE_KEYS.includes(key)) {
+                    newHeaders.push(key);
+                    headerChanged = true;
+                }
+            });
+
+            if (headerChanged) {
+                await sheet.setHeaderRow(newHeaders);
+            }
+            // ------------------------------
+
             const rows = await sheet.getRows();
             const row = rows.find(r => String(r.get('id')) === String(id));
 
             if (row) {
                 Object.keys(updates).forEach(key => {
-                    if (STUDENT_HEADERS.includes(key)) {
+                    if (!EXCLUDE_KEYS.includes(key)) {
                         let val = updates[key];
                         if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
                         row.set(key, val);
@@ -66,11 +86,11 @@ export default async function handler(req, res) {
                 res.json({ success: true, student: updates });
             } else {
                 const newRow = { id: String(id) };
-                STUDENT_HEADERS.forEach(h => {
-                    if (updates[h] !== undefined) {
-                        let val = updates[h];
+                Object.keys(updates).forEach(key => {
+                    if (!EXCLUDE_KEYS.includes(key)) {
+                        let val = updates[key];
                         if (typeof val === 'object' && val !== null) val = JSON.stringify(val);
-                        newRow[h] = val;
+                        newRow[key] = val;
                     }
                 });
                 await sheet.addRow(newRow);
