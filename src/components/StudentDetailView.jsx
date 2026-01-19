@@ -229,8 +229,8 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
         <TabButton label="📖 授業記録" active={activeTab === 'lessons'} onClick={() => setActiveTab('lessons')} />
       </div>
 
-      {/* CONTENT AREA */}
-      <div style={{ flex: 1, overflow: 'hidden', position: 'relative' }}>
+      {/* CONTENT AREA - Allow vertical scroll for the entire tab content */}
+      <div style={{ flex: 1, overflowY: 'auto', position: 'relative' }}>
         {activeTab === 'profile' ? (
           <StudentProfileTab
             student={localStudent}
@@ -303,7 +303,7 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', minHeight: '100%', paddingBottom: '1rem' }}>
       <div style={{ display: 'flex', gap: '1rem', flex: 1, minHeight: 0 }}>
         {/* Left Column - Profile & Stats (Fixed 280px) */}
         <div style={{ flex: '0 0 280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1rem', paddingRight: '0.25rem' }}>
@@ -362,8 +362,8 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
         </div>
       </div>
 
-      {/* BOTTOM ROW: Memo */}
-      <div className="card" style={{ height: '220px', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
+      {/* BOTTOM ROW: Memo - Remove fixed height to allow expansion */}
+      <div className="card" style={{ minHeight: '250px', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
         <h3 style={{ marginBottom: '0.5rem', color: 'var(--text-muted)', fontWeight: '600', fontSize: '0.85rem' }}>講師メモ (全体)</h3>
         <MemoSection
           history={student.memoHistory || []}
@@ -1132,7 +1132,8 @@ function MemoSection({ history, onAdd, onDelete }) {
             borderRadius: '6px',
             padding: '0.5rem',
             color: 'var(--text-main)',
-            resize: 'none',
+            resize: 'vertical',
+            minHeight: '120px',
             fontFamily: 'inherit',
             fontSize: '0.85rem'
           }}
