@@ -44,6 +44,13 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'memoHistory array is required' });
             }
 
+            await sheet.loadHeaderRow();
+            const headers = sheet.headerValues;
+            if (!headers.includes('tag')) {
+                const newHeaders = [...headers, 'tag'];
+                await sheet.setHeaderRow(newHeaders);
+            }
+
             const rows = await sheet.getRows();
             const studentRows = rows.filter(r => String(r.get('studentId')) === String(studentId));
 
