@@ -1431,19 +1431,25 @@ function currentIndex(i) { return i + 1; }
 function OutputUrlCard({ student, onUpdate }) {
   const [isEditing, setIsEditing] = useState(false);
   const [url, setUrl] = useState(student.outputUrl || '');
+  const [nickname, setNickname] = useState(student.nickname || '');
 
   const handleSave = () => {
     onUpdate('outputUrl', url);
+    onUpdate('nickname', nickname);
     setIsEditing(false);
   };
 
   return (
     <div className="card" style={{ padding: '1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-        <h3 style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>Note / ブログ</h3>
+        <h3 style={{ fontSize: '0.9rem', fontWeight: '600', color: 'var(--text-main)', margin: 0 }}>Note / ブログ / ニックネーム</h3>
         {!isEditing && (
           <button
-            onClick={() => setIsEditing(true)}
+            onClick={() => {
+              setIsEditing(true);
+              setUrl(student.outputUrl || '');
+              setNickname(student.nickname || '');
+            }}
             style={{
               background: 'transparent',
               border: 'none',
@@ -1461,54 +1467,77 @@ function OutputUrlCard({ student, onUpdate }) {
 
       {
         isEditing ? (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <input
               type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="URLを入力"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="ニックネームを入力"
               style={{
-                flex: 1,
+                width: '100%',
                 padding: '0.3rem',
                 fontSize: '0.85rem',
                 borderRadius: '4px',
                 border: '1px solid var(--border-color)'
               }}
             />
-            <button
-              onClick={handleSave}
-              title="保存"
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="URLを入力"
               style={{
-                background: '#10B981',
-                color: 'white',
-                border: 'none',
+                width: '100%',
+                padding: '0.3rem',
+                fontSize: '0.85rem',
                 borderRadius: '4px',
-                padding: '0.3rem 0.6rem',
-                cursor: 'pointer'
+                border: '1px solid var(--border-color)'
               }}
-            >
-              ?
-            </button>
-            <button
-              onClick={() => {
-                setIsEditing(false);
-                setUrl(student.outputUrl || '');
-              }}
-              title="キャンセル"
-              style={{
-                background: 'var(--bg-input, #F3F4F6)',
-                color: 'var(--text-muted)',
-                border: 'none',
-                borderRadius: '4px',
-                padding: '0.3rem 0.6rem',
-                cursor: 'pointer'
-              }}
-            >
-              ?
-            </button>
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => {
+                  setIsEditing(false);
+                  setUrl(student.outputUrl || '');
+                  setNickname(student.nickname || '');
+                }}
+                title="キャンセル"
+                style={{
+                  background: 'var(--bg-input, #F3F4F6)',
+                  color: 'var(--text-muted)',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.3rem 0.6rem',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem'
+                }}
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleSave}
+                title="保存"
+                style={{
+                  background: '#10B981',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  padding: '0.3rem 0.6rem',
+                  cursor: 'pointer',
+                  fontSize: '0.8rem'
+                }}
+              >
+                保存
+              </button>
+            </div>
           </div>
         ) : (
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+            {student.nickname && (
+              <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: '500' }}>
+                {student.nickname}
+              </div>
+            )}
             {student.outputUrl ? (
               <a
                 href={student.outputUrl}
@@ -1527,20 +1556,22 @@ function OutputUrlCard({ student, onUpdate }) {
                 🔗 <span style={{ textDecoration: 'underline' }}>リンクを開く</span>
               </a>
             ) : (
-              <div
-                onClick={() => setIsEditing(true)}
-                style={{
-                  fontSize: '0.8rem',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  border: '1px dashed var(--border-color)',
-                  padding: '0.5rem',
-                  borderRadius: '4px',
-                  textAlign: 'center'
-                }}
-              >
-                + URL追加
-              </div>
+              !student.nickname && (
+                <div
+                  onClick={() => setIsEditing(true)}
+                  style={{
+                    fontSize: '0.8rem',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    border: '1px dashed var(--border-color)',
+                    padding: '0.5rem',
+                    borderRadius: '4px',
+                    textAlign: 'center'
+                  }}
+                >
+                  + 追加
+                </div>
+              )
             )}
           </div>
         )

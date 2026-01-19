@@ -220,7 +220,10 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                             {/* Content Column */}
                             <div style={{ flex: 1, overflow: 'hidden' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div style={{ fontWeight: isSelected ? '600' : '500', fontSize: '0.9rem' }}>{student.name}</div>
+                                    <div style={{ fontWeight: isSelected ? '600' : '500', fontSize: '0.9rem' }}>
+                                        {student.name}
+                                        {student.nickname && <span style={{ marginLeft: '0.5rem', color: '#6B7280', fontSize: '0.85em', fontWeight: 'normal' }}>{student.nickname}</span>}
+                                    </div>
 
                                     {stats && !stats.error && (
                                         <div style={{ display: 'flex', gap: '0.3rem', fontSize: '0.7rem' }}>
