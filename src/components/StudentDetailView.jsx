@@ -1021,7 +1021,10 @@ function StatBox({ label, value, highlight }) {
 function MemoSection({ history, onAdd, onDelete }) {
   const [text, setText] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [inputWidth, setInputWidth] = useState(260);
+  const [isResizing, setIsResizing] = useState(false);
   const scrollRef = useRef(null);
+  const containerRef = useRef(null);
 
   const tags = (() => {
     const defaultTags = [
@@ -1042,6 +1045,46 @@ function MemoSection({ history, onAdd, onDelete }) {
     }
   }, [history]);
 
+  // Draggable Split Pane Logic
+  const startResizing = (e) => {
+    e.preventDefault();
+    setIsResizing(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing || !containerRef.current) return;
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const newWidth = containerRect.right - e.clientX;
+      if (newWidth > 200 && newWidth < 600) {
+        setInputWidth(newWidth);
+      }
+    };
+
+    const stopResizing = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', stopResizing);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', stopResizing);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', stopResizing);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
+
   const handleSubmit = () => {
     onAdd(text, selectedTag);
     setText('');
@@ -1059,7 +1102,7 @@ function MemoSection({ history, onAdd, onDelete }) {
   };
 
   return (
-    <div style={{ display: 'flex', gap: '0.75rem', flex: 1 }}>
+    <div ref={containerRef} style={{ display: 'flex', gap: '0', flex: 1, position: 'relative', overflow: 'hidden' }}>
       <div
         ref={scrollRef}
         style={{
@@ -1099,7 +1142,31 @@ function MemoSection({ history, onAdd, onDelete }) {
         })}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '220px' }}>
+      {/* Resize Handle (Divider) */}
+      <div
+        onMouseDown={startResizing}
+        style={{
+          width: '12px',
+          margin: '0 -4px',
+          zIndex: 10,
+          cursor: 'col-resize',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s',
+          position: 'relative'
+        }}
+      >
+        <div style={{
+          width: '2px',
+          height: '40px',
+          background: isResizing ? 'var(--primary)' : 'var(--border-color)',
+          borderRadius: '2px',
+          opacity: isResizing ? 1 : 0.5
+        }} />
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: inputWidth, flexShrink: 0 }}>
         {/* Tag selector */}
         <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
           {tags.map(tag => (
@@ -1132,7 +1199,7 @@ function MemoSection({ history, onAdd, onDelete }) {
             borderRadius: '6px',
             padding: '0.5rem',
             color: 'var(--text-main)',
-            resize: 'both',
+            resize: 'vertical',
             minHeight: '120px',
             fontFamily: 'inherit',
             fontSize: '0.85rem'
