@@ -191,9 +191,10 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
             <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', margin: 0, color: 'var(--text-main)' }}>
               {localStudent.name}
             </h2>
-            {localStudent.noteName && (
-              <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
-                {localStudent.noteName}
+            {/* Nickname Display in Header */}
+            {(localStudent.noteName || localStudent.nickname) && (
+              <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+                {localStudent.nickname || localStudent.noteName}
               </span>
             )}
             <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)', background: 'var(--bg-input, #F3F4F6)', padding: '0.1rem 0.5rem', borderRadius: '4px' }}>
