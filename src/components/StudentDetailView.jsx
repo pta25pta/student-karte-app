@@ -1239,6 +1239,16 @@ function ProfileCard({ student, onUpdate }) {
         )}
       </div>
       <h2 style={{ fontSize: '1.1rem', fontWeight: 'bold', marginBottom: '0.25rem', color: 'var(--text-main)' }}>{student.name}</h2>
+      {student.nickname && (
+        <div style={{
+          color: '#6B7280',
+          fontSize: '0.85rem',
+          marginBottom: '0.25rem',
+          fontWeight: '500'
+        }}>
+          {student.nickname}
+        </div>
+      )}
       <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{student.status}</div>
     </div>
   );
