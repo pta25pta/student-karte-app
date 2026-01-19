@@ -246,7 +246,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
           <StudentLessonTab
             student={localStudent}
             onUpdate={handleUpdate}
-            onUpdate={handleUpdate}
+
             onNotify={onNotify}
             showConfirm={showConfirm}
             showAlert={showAlert}
