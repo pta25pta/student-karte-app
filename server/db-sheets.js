@@ -154,12 +154,32 @@ class GoogleSheetsDatabase {
         const lessonSheet = await this.getSheet('lesson_records');
         const memoSheet = await this.getSheet('memo_history');
 
+        // --- Auto-Add Missing Columns Logic ---
+        await studentSheet.loadHeaderRow();
+        const currentHeaders = studentSheet.headerValues;
+        const newHeaders = [...currentHeaders];
+        let headerChanged = false;
+
+        // Check for any missing keys in updates (excluding relational data)
+        const skipKeys = ['lessonMemos', 'memoHistory'];
+        Object.keys(updates).forEach(key => {
+            if (!skipKeys.includes(key) && !newHeaders.includes(key)) {
+                newHeaders.push(key);
+                headerChanged = true;
+            }
+        });
+
+        if (headerChanged) {
+            await studentSheet.setHeaderRow(newHeaders);
+        }
+        // --------------------------------------
+
         const sRows = await studentSheet.getRows();
         const sRow = sRows.find(r => String(r.get('id')) === String(id));
 
         if (!sRow) return null;
 
-        const studentHeaders = studentSheet.headerValues;
+        const studentHeaders = studentSheet.headerValues; // Refresh headers
         let studentChanged = false;
 
         for (const key of Object.keys(updates)) {
