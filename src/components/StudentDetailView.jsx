@@ -494,6 +494,8 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
               const isSelected = ev.id === selectedEventId;
               const memoData = (student.lessonMemos || {})[ev.id];
               const hasMemo = memoData && (typeof memoData === 'string' ? memoData : (memoData.growth || memoData.challenges || memoData.instructor));
+              const eventDraftKey = `draft_lesson_${student.id}_${ev.id}`;
+              const hasEventDraft = !!localStorage.getItem(eventDraftKey);
 
               return (
                 <div
@@ -517,7 +519,10 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                     {lessonNo && <span style={{ background: isSelected ? 'var(--primary)' : '#4B5563', color: 'white', fontSize: '0.7rem', padding: '1px 5px', borderRadius: '4px' }}>{lessonNo}</span>}
                     {ev.title}
                   </div>
-                  {hasMemo && <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', fontSize: '0.6rem' }}>📝</div>}
+                  <div style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
+                    {hasEventDraft && <span style={{ fontSize: '0.55rem', color: '#F59E0B', background: '#FEF3C7', padding: '1px 4px', borderRadius: '3px' }}>✏️下書き</span>}
+                    {hasMemo && !hasEventDraft && <span style={{ fontSize: '0.6rem' }}>📝</span>}
+                  </div>
                 </div>
               );
             })
