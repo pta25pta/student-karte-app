@@ -1,0 +1,483 @@
+Failed to parse row data SyntaxError: Unexpected token '田', "田川 勝雅" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '久', "久米原 吉隆" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '濱', "濱出 庸子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '藤', "藤橋 浩美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '左', "左雲 修" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '鹿', "鹿島 安矢" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '松', "松井 貴久代" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '加', "加藤 広美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '定', "定本 香織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '坂', "坂田 大地" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '玉', "玉澤 真弓" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '工', "工藤 由恵" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '今', "今村 将史" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山路 武志" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山本 猛雄" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '眞', "眞子 孝行" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '大', "大坪 ゆうき" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '我', "我満 史織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '新', "新谷 裕也" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '森', "森内 かおり" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '高', "高橋 悟司" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '佐', "佐治 亜夜子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '清', "清水 航" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '田', "田川 勝雅" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '久', "久米原 吉隆" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '濱', "濱出 庸子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '藤', "藤橋 浩美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '左', "左雲 修" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '鹿', "鹿島 安矢" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '松', "松井 貴久代" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '加', "加藤 広美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '定', "定本 香織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '坂', "坂田 大地" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '玉', "玉澤 真弓" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '工', "工藤 由恵" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '今', "今村 将史" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山路 武志" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山本 猛雄" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '眞', "眞子 孝行" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '大', "大坪 ゆうき" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '我', "我満 史織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '新', "新谷 裕也" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '森', "森内 かおり" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '高', "高橋 悟司" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '佐', "佐治 亜夜子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '清', "清水 航" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '田', "田川 勝雅" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '久', "久米原 吉隆" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '濱', "濱出 庸子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '藤', "藤橋 浩美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '左', "左雲 修" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '鹿', "鹿島 安矢" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '松', "松井 貴久代" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '加', "加藤 広美" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '定', "定本 香織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '坂', "坂田 大地" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '玉', "玉澤 真弓" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '工', "工藤 由恵" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '今', "今村 将史" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山路 武志" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '山', "山本 猛雄" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '眞', "眞子 孝行" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '大', "大坪 ゆうき" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '我', "我満 史織" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '新', "新谷 裕也" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '森', "森内 かおり" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '高', "高橋 悟司" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '佐', "佐治 亜夜子" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22
+Failed to parse row data SyntaxError: Unexpected token '清', "清水 航" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:28:27
+    at Array.map (<anonymous>)
+    at GoogleSheetsDatabase.findAll (C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\db-sheets.js:26:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async C:\Users\玲音\.gemini\antigravity\brain\0444cacb-1d12-46f9-9323-a13eb043204e\生徒カルテ\server\index.js:60:22

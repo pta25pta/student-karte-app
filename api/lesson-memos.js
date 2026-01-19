@@ -59,7 +59,9 @@ export default async function handler(req, res) {
                     await row.save();
                 } else {
                     if (memo.growth || memo.challenges || memo.instructor) {
+                        const compositeId = String(studentId) + '_' + String(lessonId);
                         await sheet.addRow({
+                            id: compositeId,
                             studentId: String(studentId),
                             lessonId: String(lessonId),
                             growth: memo.growth || '',
