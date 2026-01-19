@@ -1099,7 +1099,7 @@ function MemoSection({ history, onAdd, onDelete }) {
         })}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', width: '220px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: '220px' }}>
         {/* Tag selector */}
         <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
           {tags.map(tag => (
@@ -1132,7 +1132,7 @@ function MemoSection({ history, onAdd, onDelete }) {
             borderRadius: '6px',
             padding: '0.5rem',
             color: 'var(--text-main)',
-            resize: 'vertical',
+            resize: 'both',
             minHeight: '120px',
             fontFamily: 'inherit',
             fontSize: '0.85rem'
