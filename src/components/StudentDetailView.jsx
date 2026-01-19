@@ -447,16 +447,29 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
 
   // Save draft to localStorage on change (debounced)
   const draftTimeoutRef = useRef(null);
+  // Helper to check if draft has actual content
+  const draftHasContent = (draft) => {
+    if (!draft) return false;
+    return !!(draft.growth || draft.challenges || draft.instructor);
+  };
+
   const handleLocalChange = (field, val) => {
     const newMemo = { ...localMemo, [field]: val };
     setLocalMemo(newMemo);
-    setHasDraft(true);
 
-    // Debounced save to localStorage
+    // Only mark as draft if there's actual content
+    const hasContent = draftHasContent(newMemo);
+    setHasDraft(hasContent);
+
+    // Debounced save to localStorage (or remove if empty)
     if (draftTimeoutRef.current) clearTimeout(draftTimeoutRef.current);
     draftTimeoutRef.current = setTimeout(() => {
       const draftKey = getDraftKey(selectedEventId);
-      localStorage.setItem(draftKey, JSON.stringify(newMemo));
+      if (hasContent) {
+        localStorage.setItem(draftKey, JSON.stringify(newMemo));
+      } else {
+        localStorage.removeItem(draftKey);
+      }
     }, 300);
   };
 
@@ -495,7 +508,14 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
               const memoData = (student.lessonMemos || {})[ev.id];
               const hasMemo = memoData && (typeof memoData === 'string' ? memoData : (memoData.growth || memoData.challenges || memoData.instructor));
               const eventDraftKey = `draft_lesson_${student.id}_${ev.id}`;
-              const hasEventDraft = !!localStorage.getItem(eventDraftKey);
+              const eventDraftRaw = localStorage.getItem(eventDraftKey);
+              let hasEventDraft = false;
+              if (eventDraftRaw) {
+                try {
+                  const parsed = JSON.parse(eventDraftRaw);
+                  hasEventDraft = !!(parsed.growth || parsed.challenges || parsed.instructor);
+                } catch (e) { hasEventDraft = false; }
+              }
 
               return (
                 <div
