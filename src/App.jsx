@@ -1,8 +1,8 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StudentList } from './components/StudentList';
 import { StudentDetailView } from './components/StudentDetailView';
 import { HomeView } from './components/HomeView';
-import { ScheduleView } from './components/ScheduleView';
+import { ScheduleView, getDefaultScheduleData } from './components/ScheduleView';
 import { SettingsView } from './components/SettingsView';
 import { LoginView } from './components/LoginView';
 import { StudentService } from './services/StudentService';
@@ -14,6 +14,13 @@ function App() {
     const [currentView, setCurrentView] = useState('home');
     const [students, setStudents] = useState([]);
 
+    // Initialize schedule data on app load if not present
+    useEffect(() => {
+        if (!localStorage.getItem('scheduleData')) {
+            localStorage.setItem('scheduleData', JSON.stringify(getDefaultScheduleData()));
+        }
+    }, []);
+
     useEffect(() => {
         StudentService.getAllStudents().then(data => {
             setStudents(data);
@@ -23,7 +30,7 @@ function App() {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
         return localStorage.getItem('isAuthenticated') === 'true';
     });
-    
+
     const [studentStats, setStudentStats] = useState(() => {
         try {
             const saved = localStorage.getItem('studentStats');
@@ -159,11 +166,11 @@ function App() {
                 justifyContent: 'space-between'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                                        <button 
-                        onClick={toggleSidebar} 
-                        style={{ 
-                            display: 'flex', 
-                            alignItems: 'center', 
+                    <button
+                        onClick={toggleSidebar}
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: '0.4rem',
                             padding: '0.4rem 0.8rem',
                             border: '1px solid var(--border-color)',
@@ -335,5 +342,3 @@ function App() {
 }
 
 export default App;
-
-
