@@ -347,9 +347,8 @@ export function HomeView({ students = [], studentStats = {}, onNavigate }) {
         </div>
 
       </div>
+      {ModalComponent}
     </div>
-      { ModalComponent }
-    </div >
   );
 }
 

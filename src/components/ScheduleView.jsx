@@ -508,8 +508,7 @@ export function ScheduleView() {
                     )}
                 </div>
             </div>
-        </div>
-        { ModalComponent }
+            {ModalComponent}
         </div >
     );
 }
