@@ -183,7 +183,10 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                                 border: isSelected ? '1px solid var(--primary)' : '1px solid transparent',
                                 borderLeft: isSelected ? '4px solid var(--primary)' : '4px solid transparent',
                                 transition: 'all 0.1s',
-                                color: 'var(--text-main)'
+                                color: 'var(--text-main)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.75rem' // Gap between icon and text
                             }}
                             onMouseEnter={e => {
                                 if (!isSelected) e.currentTarget.style.background = 'var(--bg-input, #F9FAFB)';
@@ -192,47 +195,72 @@ export function StudentList({ students, studentStats = {}, onSelectStudent, sele
                                 if (!isSelected) e.currentTarget.style.background = 'transparent';
                             }}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div style={{ fontWeight: isSelected ? '600' : '500', fontSize: '0.9rem' }}>{student.name}</div>
-
-                                {stats && !stats.error && (
-                                    <div style={{ display: 'flex', gap: '0.3rem', fontSize: '0.7rem' }}>
-                                        <span style={{
-                                            padding: '0.15rem 0.4rem',
-                                            borderRadius: '4px',
-                                            background: stats.winRate >= 60 ? 'var(--status-success-bg, #ECFDF5)' : 'var(--status-danger-bg, #FEF2F2)',
-                                            color: stats.winRate >= 60 ? '#059669' : '#DC2626',
-                                            fontWeight: '500'
-                                        }}>
-                                            {stats.winRate?.toFixed(0)}%
-                                        </span>
-
-                                        {typeof stats.rank === 'number' && (
-                                            <span style={{
-                                                padding: '0.15rem 0.4rem',
-                                                borderRadius: '4px',
-                                                background: stats.rank <= 3 ? 'var(--status-warning-bg, #FFFBEB)' : 'var(--bg-input, #F3F4F6)',
-                                                color: stats.rank <= 3 ? '#D97706' : '#6B7280',
-                                                fontWeight: '500'
-                                            }}>
-                                                {stats.rank}位
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-
-                                {hasNotSubmitted && (
-                                    <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>未提出</span>
+                            {/* Icon Avatar */}
+                            <div style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '50%',
+                                overflow: 'hidden',
+                                flexShrink: 0,
+                                border: '1px solid var(--border-color)',
+                                background: 'var(--bg-input, #F3F4F6)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}>
+                                {student.photoUrl ? (
+                                    <img src={student.photoUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                ) : (
+                                    <span style={{ fontSize: '0.8rem', color: '#9CA3AF', fontWeight: 'bold' }}>
+                                        {student.name.charAt(0)}
+                                    </span>
                                 )}
                             </div>
 
-                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', marginTop: '0.2rem' }}>
-                                <span>{student.status}</span>
-                                {stats && stats.prediction !== undefined && stats.prediction !== null && (
-                                    <span>
-                                        今日: {stats.prediction === true ? '🔴' : stats.prediction === false ? '🔵' : stats.prediction === 'skip' ? '⏸️' : ''}
-                                    </span>
-                                )}
+                            {/* Content Column */}
+                            <div style={{ flex: 1, overflow: 'hidden' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ fontWeight: isSelected ? '600' : '500', fontSize: '0.9rem' }}>{student.name}</div>
+
+                                    {stats && !stats.error && (
+                                        <div style={{ display: 'flex', gap: '0.3rem', fontSize: '0.7rem' }}>
+                                            <span style={{
+                                                padding: '0.15rem 0.4rem',
+                                                borderRadius: '4px',
+                                                background: stats.winRate >= 60 ? 'var(--status-success-bg, #ECFDF5)' : 'var(--status-danger-bg, #FEF2F2)',
+                                                color: stats.winRate >= 60 ? '#059669' : '#DC2626',
+                                                fontWeight: '500'
+                                            }}>
+                                                {stats.winRate?.toFixed(0)}%
+                                            </span>
+
+                                            {typeof stats.rank === 'number' && (
+                                                <span style={{
+                                                    padding: '0.15rem 0.4rem',
+                                                    borderRadius: '4px',
+                                                    background: stats.rank <= 3 ? 'var(--status-warning-bg, #FFFBEB)' : 'var(--bg-input, #F3F4F6)',
+                                                    color: stats.rank <= 3 ? '#D97706' : '#6B7280',
+                                                    fontWeight: '500'
+                                                }}>
+                                                    {stats.rank}位
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {hasNotSubmitted && (
+                                        <span style={{ fontSize: '0.7rem', color: '#9CA3AF' }}>未提出</span>
+                                    )}
+                                </div>
+
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'flex', justifyContent: 'space-between', marginTop: '0.2rem' }}>
+                                    <span>{student.status}</span>
+                                    {stats && stats.prediction !== undefined && stats.prediction !== null && (
+                                        <span>
+                                            今日: {stats.prediction === true ? '🔴' : stats.prediction === false ? '🔵' : stats.prediction === 'skip' ? '⏸️' : ''}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );
