@@ -534,7 +534,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
           const ctx = canvas.getContext('2d');
           ctx.drawImage(img, 0, 0, width, height);
 
-          const dataUrl = canvas.toDataURL('image/jpeg', 1.0);
+          const dataUrl = canvas.toDataURL('image/png');
           const newImages = [...images, dataUrl];
           onImagesChange(newImages);
           resolve();
