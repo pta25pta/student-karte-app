@@ -22,9 +22,9 @@ function uploadImage(base64Data, mimeType, fileName) {
     // 重要：誰でも閲覧可能な権限を設定
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
-    // サムネイルURLを生成 (sz=w1000 で十分な解像度を確保、直リンクより表示が速い)
+    // サムネイルURLを生成 (sz=w4000 に増量して画質を向上)
     var fileId = file.getId();
-    var thumbUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w1000";
+    var thumbUrl = "https://drive.google.com/thumbnail?id=" + fileId + "&sz=w4000";
 
     return {
       success: true,
