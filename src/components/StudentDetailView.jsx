@@ -379,31 +379,234 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
 // ----------------------------------------------------------------------
 // TAB 2: LESSONS (New Interface)
 // ----------------------------------------------------------------------
-function LessonMemoField({ label, value, onChange, placeholder }) {
+function LessonMemoField({ label, value, images = [], onChange, onImagesChange, onSave, placeholder, isSaving }) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const textareaRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  // Handle paste event for images
+  const handlePaste = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (file) {
+          await processAndAddImage(file);
+        }
+        break;
+      }
+    }
+  };
+
+  // Handle drag and drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+  };
+
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer?.files;
+    if (!files) return;
+
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        await processAndAddImage(file);
+      }
+    }
+  };
+
+  // Process image: resize and compress
+  const processAndAddImage = (file) => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const MAX_SIZE = 800;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > MAX_SIZE || height > MAX_SIZE) {
+            if (width > height) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            } else {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const newImages = [...images, dataUrl];
+          onImagesChange(newImages);
+          resolve();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveImage = (index) => {
+    const newImages = images.filter((_, i) => i !== index);
+    onImagesChange(newImages);
+  };
+
+  const handleFileSelect = async (e) => {
+    const files = e.target.files;
+    if (!files) return;
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        await processAndAddImage(file);
+      }
+    }
+    e.target.value = '';
+  };
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
-        {label}
-      </label>
+    <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid var(--border-color)', borderRadius: '8px', background: 'var(--bg-card, white)', overflow: 'hidden' }}>
+      {/* Header with label and save button */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-input, #F9FAFB)' }}>
+        <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)' }}>
+          {label}
+        </label>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            multiple
+            style={{ display: 'none' }}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            title="画像を添付"
+            style={{
+              background: 'transparent',
+              border: '1px solid var(--border-color)',
+              borderRadius: '4px',
+              padding: '0.25rem 0.5rem',
+              cursor: 'pointer',
+              fontSize: '0.75rem',
+              color: 'var(--text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem'
+            }}
+          >
+            📎 画像
+          </button>
+          <button
+            onClick={onSave}
+            disabled={isSaving}
+            style={{
+              background: 'var(--primary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              padding: '0.25rem 0.6rem',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              fontSize: '0.75rem',
+              fontWeight: 'bold',
+              opacity: isSaving ? 0.6 : 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.25rem'
+            }}
+          >
+            💾 {isSaving ? '保存中...' : '保存'}
+          </button>
+        </div>
+      </div>
+
+      {/* Textarea */}
       <textarea
+        ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onPaste={handlePaste}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
         placeholder={placeholder}
         style={{
           width: '100%',
-          minHeight: '100px',
+          minHeight: '80px',
           resize: 'vertical',
           padding: '0.75rem',
           fontSize: '0.95rem',
           lineHeight: '1.5',
-          border: '1px solid var(--border-color)',
-          borderRadius: '6px',
-          background: 'var(--bg-card, white)',
+          border: 'none',
+          borderBottom: images.length > 0 ? '1px solid var(--border-color)' : 'none',
+          background: isDragOver ? '#EFF6FF' : 'transparent',
           color: 'var(--text-main)',
           fontFamily: 'inherit',
           outline: 'none'
         }}
       />
+
+      {/* Image preview area */}
+      {images.length > 0 && (
+        <div style={{ padding: '0.5rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: 'var(--bg-input, #F9FAFB)' }}>
+          {images.map((img, index) => (
+            <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+              <img
+                src={img}
+                alt={`添付 ${index + 1}`}
+                style={{
+                  maxWidth: '120px',
+                  maxHeight: '80px',
+                  borderRadius: '4px',
+                  border: '1px solid var(--border-color)',
+                  cursor: 'pointer'
+                }}
+                onClick={() => window.open(img, '_blank')}
+                title="クリックで拡大"
+              />
+              <button
+                onClick={() => handleRemoveImage(index)}
+                style={{
+                  position: 'absolute',
+                  top: '-6px',
+                  right: '-6px',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  background: '#EF4444',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '0.65rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  lineHeight: 1
+                }}
+                title="削除"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -440,8 +643,9 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     onUpdate('lessonMemos', newMemos);
   };
 
-  const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '' });
+  const [localMemo, setLocalMemo] = useState({ growth: '', challenges: '', instructor: '', growthImages: [], challengesImages: [], instructorImages: [] });
   const [hasDraft, setHasDraft] = useState(false);
+  const [savingField, setSavingField] = useState(null); // 'growth' | 'challenges' | 'instructor' | null
 
   // Draft key for localStorage
   const getDraftKey = (eventId) => `draft_lesson_${student.id}_${eventId}`;
@@ -456,7 +660,14 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
         // Load draft if exists
         try {
           const draft = JSON.parse(savedDraft);
-          setLocalMemo(draft);
+          setLocalMemo({
+            growth: draft.growth || '',
+            challenges: draft.challenges || '',
+            instructor: draft.instructor || '',
+            growthImages: draft.growthImages || [],
+            challengesImages: draft.challengesImages || [],
+            instructorImages: draft.instructorImages || []
+          });
           setHasDraft(true);
         } catch (e) {
           localStorage.removeItem(draftKey);
@@ -466,20 +677,23 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
         // Load from API data
         const memoData = (student.lessonMemos || {})[selectedEventId];
         if (!memoData) {
-          setLocalMemo({ growth: '', challenges: '', instructor: '' });
+          setLocalMemo({ growth: '', challenges: '', instructor: '', growthImages: [], challengesImages: [], instructorImages: [] });
         } else if (typeof memoData === 'string') {
-          setLocalMemo({ growth: memoData, challenges: '', instructor: '' });
+          setLocalMemo({ growth: memoData, challenges: '', instructor: '', growthImages: [], challengesImages: [], instructorImages: [] });
         } else {
           setLocalMemo({
             growth: memoData.growth || '',
             challenges: memoData.challenges || '',
-            instructor: memoData.instructor || ''
+            instructor: memoData.instructor || '',
+            growthImages: memoData.growthImages || [],
+            challengesImages: memoData.challengesImages || [],
+            instructorImages: memoData.instructorImages || []
           });
         }
         setHasDraft(false);
       }
     } else {
-      setLocalMemo({ growth: '', challenges: '', instructor: '' });
+      setLocalMemo({ growth: '', challenges: '', instructor: '', growthImages: [], challengesImages: [], instructorImages: [] });
       setHasDraft(false);
     }
   }, [selectedEventId, student.lessonMemos, selectedEvent, student.id]);
@@ -489,7 +703,10 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
   // Helper to check if draft has actual content
   const draftHasContent = (draft) => {
     if (!draft) return false;
-    return !!(draft.growth || draft.challenges || draft.instructor);
+    return !!(draft.growth || draft.challenges || draft.instructor ||
+      (draft.growthImages && draft.growthImages.length > 0) ||
+      (draft.challengesImages && draft.challengesImages.length > 0) ||
+      (draft.instructorImages && draft.instructorImages.length > 0));
   };
 
   const handleLocalChange = (field, val) => {
@@ -512,18 +729,132 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
     }, 300);
   };
 
+  // Handle individual field save
+  const handleSaveField = async (field) => {
+    if (!selectedEventId) return;
+    setSavingField(field);
+
+    const currentMemos = student.lessonMemos || {};
+    const currentEventMemo = currentMemos[selectedEventId] || {};
+    const imagesField = field + 'Images';
+
+    try {
+      // Upload new images to Google Drive
+      const localImages = localMemo[imagesField] || [];
+      const uploadedUrls = [];
+
+      for (const img of localImages) {
+        // Check if it's a base64 data URL (new image) or already a URL (previously uploaded)
+        if (img.startsWith('data:')) {
+          // Upload to Google Drive
+          if (onNotify) onNotify('画像をアップロード中...', 'info');
+          const result = await StudentService.uploadImage(img, student.id, selectedEventId, field);
+          uploadedUrls.push(result.url);
+        } else {
+          // Already a URL, keep it
+          uploadedUrls.push(img);
+        }
+      }
+
+      const updatedEventMemo = {
+        ...currentEventMemo,
+        [field]: localMemo[field],
+        [imagesField]: uploadedUrls
+      };
+
+      const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
+
+      await onUpdate('lessonMemos', newMemos, true); // silent update
+
+      // Update local state with uploaded URLs
+      setLocalMemo(prev => ({
+        ...prev,
+        [imagesField]: uploadedUrls
+      }));
+
+      if (onNotify) onNotify(`${field === 'growth' ? '生徒本人の成長' : field === 'challenges' ? '課題' : '講師メモ'}を保存しました`, 'success');
+
+      // Update draft in localStorage (remove if now matches saved)
+      const draftKey = getDraftKey(selectedEventId);
+      const savedDraft = localStorage.getItem(draftKey);
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          delete draft[field];
+          delete draft[imagesField];
+          if (draftHasContent(draft)) {
+            localStorage.setItem(draftKey, JSON.stringify(draft));
+          } else {
+            localStorage.removeItem(draftKey);
+            setHasDraft(false);
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      if (onNotify) onNotify('保存に失敗しました: ' + err.message, 'error');
+    } finally {
+      setSavingField(null);
+    }
+  };
+
   const handleSaveMemo = async () => {
     if (!selectedEventId) return;
-    const currentMemos = student.lessonMemos || {};
-    const newMemos = { ...currentMemos, [selectedEventId]: { ...localMemo } };
-    await onUpdate('lessonMemos', newMemos);
 
-    // Clear draft after successful save
-    const draftKey = getDraftKey(selectedEventId);
-    localStorage.removeItem(draftKey);
-    setHasDraft(false);
+    try {
+      // Upload all new images to Google Drive
+      const uploadImages = async (images, fieldName) => {
+        const uploadedUrls = [];
+        for (const img of images) {
+          if (img.startsWith('data:')) {
+            const result = await StudentService.uploadImage(img, student.id, selectedEventId, fieldName);
+            uploadedUrls.push(result.url);
+          } else {
+            uploadedUrls.push(img);
+          }
+        }
+        return uploadedUrls;
+      };
 
-    if (onNotify) onNotify('授業記録を保存しました', 'success');
+      if (onNotify) onNotify('画像をアップロード中...', 'info');
+
+      const [growthUrls, challengesUrls, instructorUrls] = await Promise.all([
+        uploadImages(localMemo.growthImages || [], 'growth'),
+        uploadImages(localMemo.challengesImages || [], 'challenges'),
+        uploadImages(localMemo.instructorImages || [], 'instructor')
+      ]);
+
+      const currentMemos = student.lessonMemos || {};
+      const newMemos = { ...currentMemos, [selectedEventId]: {
+        growth: localMemo.growth,
+        challenges: localMemo.challenges,
+        instructor: localMemo.instructor,
+        growthImages: growthUrls,
+        challengesImages: challengesUrls,
+        instructorImages: instructorUrls
+      }};
+      await onUpdate('lessonMemos', newMemos);
+
+      // Update local state with uploaded URLs
+      setLocalMemo(prev => ({
+        ...prev,
+        growthImages: growthUrls,
+        challengesImages: challengesUrls,
+        instructorImages: instructorUrls
+      }));
+
+      // Clear draft after successful save
+      const draftKey = getDraftKey(selectedEventId);
+      localStorage.removeItem(draftKey);
+      setHasDraft(false);
+
+      if (onNotify) onNotify('授業記録を保存しました', 'success');
+    } catch (err) {
+      console.error('Save error:', err);
+      if (onNotify) onNotify('保存に失敗しました: ' + err.message, 'error');
+    }
   };
 
   // Parse "第X回" logic
@@ -627,20 +958,32 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
               <LessonMemoField
                 label="生徒本人の成長"
                 value={localMemo.growth}
+                images={localMemo.growthImages || []}
                 onChange={(val) => handleLocalChange('growth', val)}
-                placeholder="生徒の成長・良かった点を記入..."
+                onImagesChange={(imgs) => handleLocalChange('growthImages', imgs)}
+                onSave={() => handleSaveField('growth')}
+                placeholder="生徒の成長・良かった点を記入... (Ctrl+V で画像貼付)"
+                isSaving={savingField === 'growth'}
               />
               <LessonMemoField
                 label="課題"
                 value={localMemo.challenges}
+                images={localMemo.challengesImages || []}
                 onChange={(val) => handleLocalChange('challenges', val)}
-                placeholder="今後の課題・改善点を記入..."
+                onImagesChange={(imgs) => handleLocalChange('challengesImages', imgs)}
+                onSave={() => handleSaveField('challenges')}
+                placeholder="今後の課題・改善点を記入... (Ctrl+V で画像貼付)"
+                isSaving={savingField === 'challenges'}
               />
               <LessonMemoField
                 label="講師メモ"
                 value={localMemo.instructor}
+                images={localMemo.instructorImages || []}
                 onChange={(val) => handleLocalChange('instructor', val)}
-                placeholder="講師としてのメモ・覚え書きを記入..."
+                onImagesChange={(imgs) => handleLocalChange('instructorImages', imgs)}
+                onSave={() => handleSaveField('instructor')}
+                placeholder="講師としてのメモ・覚え書きを記入... (Ctrl+V で画像貼付)"
+                isSaving={savingField === 'instructor'}
               />
             </div>
           </>

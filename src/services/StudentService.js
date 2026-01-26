@@ -108,5 +108,29 @@ export const StudentService = {
             console.error('API Error:', err);
             throw err;
         }
+    },
+
+    async uploadImage(imageData, studentId, eventId, fieldName) {
+        try {
+            const res = await fetch(API_BASE + '/upload-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    imageData,
+                    studentId,
+                    eventId,
+                    fieldName
+                })
+            });
+
+            if (!res.ok) {
+                const error = await res.json();
+                throw new Error(error.error || 'Failed to upload image');
+            }
+            return await res.json();
+        } catch (err) {
+            console.error('Upload Error:', err);
+            throw err;
+        }
     }
 };
