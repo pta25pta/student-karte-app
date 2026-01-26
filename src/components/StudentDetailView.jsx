@@ -380,10 +380,91 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
 // ----------------------------------------------------------------------
 // TAB 2: LESSONS (New Interface)
 // ----------------------------------------------------------------------
-function LessonMemoField({ label, value, images = [], onChange, onImagesChange, onSave, placeholder, isSaving, showImage }) {
+function LessonMemoField({ label, value, images = [], onChange, onImagesChange, onSave, onUpload, placeholder, isSaving, showImage }) {
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
+
+  // 指定した位置にテキストを挿入するユーティリティ
+  const insertText = (text) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const currentText = textarea.value;
+
+    const newText = currentText.substring(0, start) + text + currentText.substring(end);
+    onChange(newText);
+
+    // カーソル位置を挿入したテキストの後ろに移動 (setTimeoutでDOM更新を待つ)
+    setTimeout(() => {
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }, 0);
+  };
+
+  // Handle image upload and insert link
+  const handleImageUpload = async (file) => {
+    if (!onUpload) {
+      // Fallback to old behavior if onUpload not provided
+      await processAndAddImage(file);
+      return;
+    }
+
+    setIsUploading(true);
+    const tempId = Math.random().toString(36).substring(7);
+    const placeholderText = `\n![アップロード中...](uploading-${tempId})\n`;
+
+    // カーソル位置にプレースホルダーを挿入
+    insertText(placeholderText);
+
+    try {
+      // Resize and compress first (optional but recommended)
+      const dataUrl = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_SIZE = 2000;
+            let width = img.width;
+            let height = img.height;
+            if (width > MAX_SIZE || height > MAX_SIZE) {
+              if (width > height) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+              else { width *= MAX_SIZE / height; height = MAX_SIZE; }
+            }
+            canvas.width = width; canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', 0.9));
+          };
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+
+      const result = await onUpload(dataUrl, file.name);
+
+      const markdown = `\n![image](${result.url})\n`;
+      const currentVal = textareaRef.current.value;
+      const newVal = currentVal.replace(placeholderText, markdown);
+      onChange(newVal);
+
+      // Also add to the images array for the preview area if needed
+      if (onImagesChange) {
+        onImagesChange([...images, result.url]);
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      const currentVal = textareaRef.current.value;
+      const newVal = currentVal.replace(placeholderText, `\n> [!ERROR] アップロード失敗: ${err.message}\n`);
+      onChange(newVal);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Handle paste event for images
   const handlePaste = async (e) => {
@@ -395,7 +476,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
         e.preventDefault();
         const file = item.getAsFile();
         if (file) {
-          await processAndAddImage(file);
+          await handleImageUpload(file);
         }
         break;
       }
@@ -421,12 +502,12 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
 
     for (const file of files) {
       if (file.type.startsWith('image/')) {
-        await processAndAddImage(file);
+        await handleImageUpload(file);
       }
     }
   };
 
-  // Process image: resize and compress
+  // Old resizing logic (kept as fallback for file select or if onUpload missing)
   const processAndAddImage = (file) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -474,7 +555,8 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
     if (!files) return;
     for (const file of files) {
       if (file.type.startsWith('image/')) {
-        await processAndAddImage(file);
+        // Use the new immediate upload for file selection too
+        await handleImageUpload(file);
       }
     }
     e.target.value = '';
@@ -485,7 +567,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
       {/* Header with label and save button */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', borderBottom: '1px solid var(--border-color)', background: 'var(--bg-input, #F9FAFB)' }}>
         <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-main)' }}>
-          {label}
+          {label} {isUploading && <span style={{ fontWeight: 'normal', color: 'var(--primary)', marginLeft: '0.5rem', fontSize: '0.75rem' }}>⌛ アップロード中...</span>}
         </label>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <input
@@ -549,7 +631,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
         placeholder={placeholder}
         style={{
           width: '100%',
-          minHeight: '80px',
+          minHeight: '120px',
           resize: 'vertical',
           padding: '0.75rem',
           fontSize: '0.95rem',
@@ -563,9 +645,9 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
         }}
       />
 
-      {/* Image preview area */}
+      {/* Image preview area (URLs only) */}
       {images.length > 0 && (
-        <div style={{ padding: '0.5rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: 'var(--bg-input, #F9FAFB)' }}>
+        <div style={{ padding: '0.5rem 0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap', background: 'var(--bg-input, #F9FAFB)', borderTop: '1px solid var(--border-color)' }}>
           {images.map((img, index) => (
             <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
               <img
@@ -576,7 +658,8 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
                   maxHeight: '80px',
                   borderRadius: '4px',
                   border: '1px solid var(--border-color)',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  background: 'white'
                 }}
                 onClick={() => showImage ? showImage(img) : window.open(img, '_blank')}
                 title="クリックで拡大"
@@ -598,7 +681,8 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  lineHeight: 1
+                  lineHeight: 1,
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
                 }}
                 title="削除"
               >
@@ -730,6 +814,44 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
     }, 300);
   };
 
+  // 即時アップロードハンドラ
+  const handleImmediateUpload = async (dataUrl, fileName, field) => {
+    const gasUrl = import.meta.env.VITE_GAS_URL;
+
+    try {
+      if (gasUrl) {
+        // GAS Web App へ送信
+        try {
+          const response = await fetch(gasUrl, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Content-Type': 'text/plain;charset=utf-8', // GAS doPost treats this as postData
+            },
+            body: JSON.stringify({
+              base64Data: dataUrl.split(',')[1],
+              mimeType: 'image/jpeg',
+              fileName: fileName
+            })
+          });
+          const result = await response.json();
+          if (result.success) return result;
+          throw new Error(result.error || 'GAS upload failed');
+        } catch (gasErr) {
+          console.warn('GAS upload failed, falling back to Vercel API:', gasErr);
+          // Fallback to Vercel API below
+        }
+      }
+
+      // 既存の StudentService を利用して Vercel 経由でアップロード
+      const result = await StudentService.uploadImage(dataUrl, student.id, selectedEventId, field);
+      return result; // { url, fileId, success }
+    } catch (err) {
+      console.error('Immediate upload error:', err);
+      throw err;
+    }
+  };
+
   // Handle individual field save
   const handleSaveField = async (field) => {
     if (!selectedEventId) return;
@@ -828,14 +950,16 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
       ]);
 
       const currentMemos = student.lessonMemos || {};
-      const newMemos = { ...currentMemos, [selectedEventId]: {
-        growth: localMemo.growth,
-        challenges: localMemo.challenges,
-        instructor: localMemo.instructor,
-        growthImages: growthUrls,
-        challengesImages: challengesUrls,
-        instructorImages: instructorUrls
-      }};
+      const newMemos = {
+        ...currentMemos, [selectedEventId]: {
+          growth: localMemo.growth,
+          challenges: localMemo.challenges,
+          instructor: localMemo.instructor,
+          growthImages: growthUrls,
+          challengesImages: challengesUrls,
+          instructorImages: instructorUrls
+        }
+      };
       await onUpdate('lessonMemos', newMemos);
 
       // Update local state with uploaded URLs
@@ -962,8 +1086,9 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
                 images={localMemo.growthImages || []}
                 onChange={(val) => handleLocalChange('growth', val)}
                 onImagesChange={(imgs) => handleLocalChange('growthImages', imgs)}
+                onUpload={(dataUrl, name) => handleImmediateUpload(dataUrl, name, 'growth')}
                 onSave={() => handleSaveField('growth')}
-                placeholder="生徒の成長・良かった点を記入... (Ctrl+V で画像貼付)"
+                placeholder="生徒の成長・良かった点を記入... (貼り付け/ドロップで即時アップロード)"
                 isSaving={savingField === 'growth'}
                 showImage={showImage}
               />
@@ -973,8 +1098,9 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
                 images={localMemo.challengesImages || []}
                 onChange={(val) => handleLocalChange('challenges', val)}
                 onImagesChange={(imgs) => handleLocalChange('challengesImages', imgs)}
+                onUpload={(dataUrl, name) => handleImmediateUpload(dataUrl, name, 'challenges')}
                 onSave={() => handleSaveField('challenges')}
-                placeholder="今後の課題・改善点を記入... (Ctrl+V で画像貼付)"
+                placeholder="今後の課題・改善点を記入... (貼り付け/ドロップで即時アップロード)"
                 isSaving={savingField === 'challenges'}
                 showImage={showImage}
               />
@@ -984,8 +1110,9 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
                 images={localMemo.instructorImages || []}
                 onChange={(val) => handleLocalChange('instructor', val)}
                 onImagesChange={(imgs) => handleLocalChange('instructorImages', imgs)}
+                onUpload={(dataUrl, name) => handleImmediateUpload(dataUrl, name, 'instructor')}
                 onSave={() => handleSaveField('instructor')}
-                placeholder="講師としてのメモ・覚え書きを記入... (Ctrl+V で画像貼付)"
+                placeholder="講師としてのメモ・覚え書きを記入... (貼り付け/ドロップで即時アップロード)"
                 isSaving={savingField === 'instructor'}
                 showImage={showImage}
               />
