@@ -71,6 +71,7 @@ export default async function handler(req, res) {
             requestBody: fileMetadata,
             media: media,
             fields: 'id, webViewLink, webContentLink',
+            supportsAllDrives: true,
         });
 
         // Make the file publicly accessible
@@ -80,6 +81,7 @@ export default async function handler(req, res) {
                 role: 'reader',
                 type: 'anyone',
             },
+            supportsAllDrives: true,
         });
 
         // Get the direct view URL
