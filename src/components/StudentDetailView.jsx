@@ -5,7 +5,7 @@ import { ScenarioPanel } from './ScenarioPanel';
 import { useModal } from './Modal';
 
 export function StudentDetailView({ student, initialStats, onNotify }) {
-  const [ModalComponent, showConfirm, showAlert] = useModal();
+  const [ModalComponent, showConfirm, showAlert, showImage] = useModal();
   const [localStudent, setLocalStudent] = useState(student);
   const [predictionStats, setPredictionStats] = useState(initialStats || null);
   const [scenarioData, setScenarioData] = useState([]);
@@ -251,6 +251,7 @@ export function StudentDetailView({ student, initialStats, onNotify }) {
             onNotify={onNotify}
             showConfirm={showConfirm}
             showAlert={showAlert}
+            showImage={showImage}
           />
         )}
       </div>
@@ -379,7 +380,7 @@ function StudentProfileTab({ student, predictionStats, scenarioData, loadingStat
 // ----------------------------------------------------------------------
 // TAB 2: LESSONS (New Interface)
 // ----------------------------------------------------------------------
-function LessonMemoField({ label, value, images = [], onChange, onImagesChange, onSave, placeholder, isSaving }) {
+function LessonMemoField({ label, value, images = [], onChange, onImagesChange, onSave, placeholder, isSaving, showImage }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -577,7 +578,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
                   border: '1px solid var(--border-color)',
                   cursor: 'pointer'
                 }}
-                onClick={() => window.open(img, '_blank')}
+                onClick={() => showImage ? showImage(img) : window.open(img, '_blank')}
                 title="クリックで拡大"
               />
               <button
@@ -611,7 +612,7 @@ function LessonMemoField({ label, value, images = [], onChange, onImagesChange, 
   );
 }
 
-function StudentLessonTab({ student, onUpdate, onNotify }) {
+function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert, showImage }) {
   const events = useMemo(() => {
     const saved = localStorage.getItem('scheduleData');
     if (saved) {
@@ -964,6 +965,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 onSave={() => handleSaveField('growth')}
                 placeholder="生徒の成長・良かった点を記入... (Ctrl+V で画像貼付)"
                 isSaving={savingField === 'growth'}
+                showImage={showImage}
               />
               <LessonMemoField
                 label="課題"
@@ -974,6 +976,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 onSave={() => handleSaveField('challenges')}
                 placeholder="今後の課題・改善点を記入... (Ctrl+V で画像貼付)"
                 isSaving={savingField === 'challenges'}
+                showImage={showImage}
               />
               <LessonMemoField
                 label="講師メモ"
@@ -984,6 +987,7 @@ function StudentLessonTab({ student, onUpdate, onNotify }) {
                 onSave={() => handleSaveField('instructor')}
                 placeholder="講師としてのメモ・覚え書きを記入... (Ctrl+V で画像貼付)"
                 isSaving={savingField === 'instructor'}
+                showImage={showImage}
               />
             </div>
           </>
