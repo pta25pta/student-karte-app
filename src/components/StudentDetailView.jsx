@@ -722,8 +722,16 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
   const handleMemoChange = (field, val) => {
     if (!selectedEventId) return;
     const currentMemos = student.lessonMemos || {};
-    const currentEventMemo = currentMemos[selectedEventId] || { growth: '', challenges: '', instructor: '' };
-    const updatedEventMemo = { ...currentEventMemo, [field]: val };
+    const currentEventMemo = currentMemos[selectedEventId] || {};
+    // Ensure all fields are preserved, using localMemo as fallback
+    const updatedEventMemo = {
+      growth: field === 'growth' ? val : (currentEventMemo.growth || localMemo.growth || ''),
+      challenges: field === 'challenges' ? val : (currentEventMemo.challenges || localMemo.challenges || ''),
+      instructor: field === 'instructor' ? val : (currentEventMemo.instructor || localMemo.instructor || ''),
+      growthImages: currentEventMemo.growthImages || localMemo.growthImages || [],
+      challengesImages: currentEventMemo.challengesImages || localMemo.challengesImages || [],
+      instructorImages: currentEventMemo.instructorImages || localMemo.instructorImages || []
+    };
     const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };
     onUpdate('lessonMemos', newMemos);
   };
@@ -879,10 +887,14 @@ function StudentLessonTab({ student, onUpdate, onNotify, showConfirm, showAlert,
         }
       }
 
+      // Merge with localMemo to ensure all fields are preserved
       const updatedEventMemo = {
-        ...currentEventMemo,
-        [field]: localMemo[field],
-        [imagesField]: uploadedUrls
+        growth: localMemo.growth || currentEventMemo.growth || '',
+        challenges: localMemo.challenges || currentEventMemo.challenges || '',
+        instructor: localMemo.instructor || currentEventMemo.instructor || '',
+        growthImages: field === 'growth' ? uploadedUrls : (localMemo.growthImages || currentEventMemo.growthImages || []),
+        challengesImages: field === 'challenges' ? uploadedUrls : (localMemo.challengesImages || currentEventMemo.challengesImages || []),
+        instructorImages: field === 'instructor' ? uploadedUrls : (localMemo.instructorImages || currentEventMemo.instructorImages || [])
       };
 
       const newMemos = { ...currentMemos, [selectedEventId]: updatedEventMemo };

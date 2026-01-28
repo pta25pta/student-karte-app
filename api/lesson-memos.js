@@ -35,7 +35,10 @@ export default async function handler(req, res) {
                     memos[r.get('lessonId')] = {
                         growth: r.get('growth'),
                         challenges: r.get('challenges'),
-                        instructor: r.get('instructor')
+                        instructor: r.get('instructor'),
+                        growthImages: r.get('growthImages') ? JSON.parse(r.get('growthImages')) : [],
+                        challengesImages: r.get('challengesImages') ? JSON.parse(r.get('challengesImages')) : [],
+                        instructorImages: r.get('instructorImages') ? JSON.parse(r.get('instructorImages')) : []
                     };
                 });
             res.json(memos);
@@ -46,6 +49,24 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: 'lessonMemos object is required' });
             }
 
+            // Ensure headers exist
+            await sheet.loadHeaderRow();
+            const headers = sheet.headerValues;
+            const neededHeaders = ['growthImages', 'challengesImages', 'instructorImages'];
+            let newHeaders = [...headers];
+            let headerChanged = false;
+
+            neededHeaders.forEach(h => {
+                if (!newHeaders.includes(h)) {
+                    newHeaders.push(h);
+                    headerChanged = true;
+                }
+            });
+
+            if (headerChanged) {
+                await sheet.setHeaderRow(newHeaders);
+            }
+
             const rows = await sheet.getRows();
             const studentRows = rows.filter(r => String(r.get('studentId')) === String(studentId));
 
@@ -53,12 +74,16 @@ export default async function handler(req, res) {
             for (const [lessonId, memo] of Object.entries(lessonMemos)) {
                 const row = studentRows.find(r => String(r.get('lessonId')) === String(lessonId));
                 if (row) {
-                    row.set('growth', memo.growth || '');
-                    row.set('challenges', memo.challenges || '');
-                    row.set('instructor', memo.instructor || '');
+                    // Only update fields that are explicitly provided (not undefined)
+                    if (memo.growth !== undefined) row.set('growth', memo.growth || '');
+                    if (memo.challenges !== undefined) row.set('challenges', memo.challenges || '');
+                    if (memo.instructor !== undefined) row.set('instructor', memo.instructor || '');
+                    if (memo.growthImages !== undefined) row.set('growthImages', JSON.stringify(memo.growthImages || []));
+                    if (memo.challengesImages !== undefined) row.set('challengesImages', JSON.stringify(memo.challengesImages || []));
+                    if (memo.instructorImages !== undefined) row.set('instructorImages', JSON.stringify(memo.instructorImages || []));
                     await row.save();
                 } else {
-                    if (memo.growth || memo.challenges || memo.instructor) {
+                    if (memo.growth || memo.challenges || memo.instructor || (memo.growthImages && memo.growthImages.length) || (memo.challengesImages && memo.challengesImages.length) || (memo.instructorImages && memo.instructorImages.length)) {
                         const compositeId = String(studentId) + '_' + String(lessonId);
                         await sheet.addRow({
                             id: compositeId,
@@ -66,7 +91,10 @@ export default async function handler(req, res) {
                             lessonId: String(lessonId),
                             growth: memo.growth || '',
                             challenges: memo.challenges || '',
-                            instructor: memo.instructor || ''
+                            instructor: memo.instructor || '',
+                            growthImages: JSON.stringify(memo.growthImages || []),
+                            challengesImages: JSON.stringify(memo.challengesImages || []),
+                            instructorImages: JSON.stringify(memo.instructorImages || [])
                         });
                     }
                 }
